@@ -254,3 +254,70 @@ jobs:
               ].join('\n'),
               labels
             });
+
+            // Préparer les infos pour l'email
+            core.exportVariable('ALERT_DATE', date);
+            core.exportVariable('ALERT_URL', url);
+            core.exportVariable('ALERT_IS_KW', alertsSection.length > 0 ? 'true' : 'false');
+            core.exportVariable('ALERT_BODY_MD', [
+              isAlert ? '🚨 **Alerte mot-clé déclenchée**' : '🔔 **Nouvelles entrées détectées**',
+              '',
+              `Date : ${date}`,
+              alertsSection,
+              '**Sources interrogées :**',
+              '- FNS / SNSF (data.snf.ch)',
+              '- Parlement VS (parlement.vs.ch)',
+              '',
+              `Consultez la compilation : ${url}`,
+              '',
+              'Vérifiez les nouvelles entrées et ajustez leur priorité.',
+            ].join('\n'));
+
+      - name: Préparer l'adresse email destinataire
+        if: steps.commit.outputs.changed == 'true'
+        id: mail-prep
+        run: |
+          EMAIL=$(node -e "
+            try {
+              const d = JSON.parse(require('fs').readFileSync('data.json','utf8'));
+              console.log(d.meta && d.meta.alertEmail ? d.meta.alertEmail : '');
+            } catch(e) { console.log(''); }
+          ")
+          echo "to=$EMAIL" >> $GITHUB_OUTPUT
+          echo "has_email=$([ -n '$EMAIL' ] && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Envoyer l'email d'alerte
+        if: steps.commit.outputs.changed == 'true' && steps.mail-prep.outputs.to != ''
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ${{ env.ALERT_IS_KW == 'true' && format('🚨 Alerte veille HEP-VS — Mot-clé détecté ({0})', env.ALERT_DATE) || format('🔔 Veille juridique HEP-VS — Mise à jour ({0})', env.ALERT_DATE) }}
+          to: ${{ steps.mail-prep.outputs.to }}
+          from: "Veille HEP-VS <${{ secrets.MAIL_USERNAME }}>"
+          html_body: |
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head><meta charset="UTF-8"><style>
+              body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 20px; }
+              .card { background: #fff; border-radius: 8px; padding: 24px; max-width: 600px; margin: 0 auto; border-top: 4px solid #C8102E; }
+              h2 { color: #1E2B3C; margin-top: 0; }
+              .badge { background: #C8102E; color: #fff; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+              .alert-badge { background: #b45309; }
+              .kw-item { background: #FEF3C7; border-left: 3px solid #b45309; padding: 6px 12px; margin: 6px 0; border-radius: 4px; font-size: 14px; }
+              .btn { display: inline-block; background: #C8102E; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 16px; }
+              .footer { font-size: 11px; color: #9ca3af; margin-top: 20px; text-align: center; }
+            </style></head>
+            <body><div class="card">
+              <p><span class="badge ${{ env.ALERT_IS_KW == 'true' && 'alert-badge' || '' }}">${{ env.ALERT_IS_KW == 'true' && '🚨 ALERTE MOT-CLÉ' || '🔔 MISE À JOUR' }}</span></p>
+              <h2>Veille juridique HEP-VS</h2>
+              <p><strong>Date :</strong> ${{ env.ALERT_DATE }}</p>
+              <p><strong>Sources interrogées :</strong> FNS / SNSF · Parlement VS</p>
+              <p>De nouvelles entrées ont été détectées et ajoutées à la compilation.</p>
+              <a href="${{ env.ALERT_URL }}" class="btn">📋 Consulter la compilation</a>
+              <div class="footer">Email envoyé automatiquement par le workflow veille-auto.yml · GitHub Actions</div>
+            </div></body></html>
+          ignore_cert: false

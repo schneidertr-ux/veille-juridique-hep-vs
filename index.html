@@ -626,9 +626,25 @@
     <hr style="margin:1.25rem 0;border:none;border-top:1.5px solid var(--border)" />
     <h2 style="font-size:.95rem;color:var(--navy);margin-bottom:.5rem">🔔 Alertes par mot-clé</h2>
     <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem">
-      Le workflow hebdomadaire crée une Issue GitHub dès qu'une nouvelle entrée contient un de ces mots-clés.
-      Vous recevrez une notification email automatique selon vos réglages GitHub.
+      Le workflow hebdomadaire détecte les nouvelles entrées correspondant à vos mots-clés
+      et envoie un <strong>email récapitulatif</strong> + crée une Issue GitHub.
     </p>
+    <!-- Adresse email destinataire -->
+    <div style="margin-bottom:.9rem">
+      <label style="font-size:.71rem;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:.3rem">
+        📧 Adresse de réception des alertes
+      </label>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <input type="email" id="alert-email-input" placeholder="ex: tobias@hep-vs.ch"
+          style="flex:1;min-width:220px;padding:.4rem .7rem;border:1.5px solid var(--border-mid);border-radius:var(--radius);font-size:.85rem;font-family:inherit" />
+        <span style="font-size:.72rem;color:var(--text-muted)">Sauvegardé dans data.json</span>
+      </div>
+      <div style="margin-top:.4rem;padding:.5rem .7rem;background:var(--info-bg);border:1px solid var(--info-brd);border-radius:5px;font-size:.72rem;color:var(--info-clr)">
+        ℹ️ L'envoi email nécessite un <strong>App Password Gmail</strong> stocké dans les Secrets GitHub
+        (<code>MAIL_PASSWORD</code>). <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer">Créer un App Password →</a>
+        <br>Puis dans GitHub : <a href="https://github.com/schneidertr-ux/veille-juridique-hep-vs/settings/secrets/actions" target="_blank" rel="noreferrer">Settings → Secrets → MAIL_PASSWORD</a>
+      </div>
+    </div>
     <div style="display:flex;gap:.5rem;margin-bottom:.7rem;flex-wrap:wrap">
       <input type="text" id="alert-kw-input" placeholder="ex: accréditation, LEHE, Innosuisse…"
         style="flex:1;min-width:200px;padding:.4rem .7rem;border:1.5px solid var(--border-mid);border-radius:var(--radius);font-size:.85rem;font-family:inherit"
@@ -1096,7 +1112,11 @@ function toggleSettings() {
   const open = p.style.display !== 'none' && p.style.display !== '';
   p.style.display = open ? 'none' : 'block';
   btn.setAttribute('aria-expanded', !open);
-  if (!open) renderAlertChips(); // refresh chips when opening
+  if (!open) {
+    renderAlertChips();
+    const emailEl = document.getElementById('alert-email-input');
+    if (emailEl) emailEl.value = appData.meta?.alertEmail || '';
+  }
 }
 
 // ════════════════════════════════════════════════════════
@@ -2315,9 +2335,13 @@ function removeAlertKeyword(idx) {
 }
 
 async function saveAlertKeywords() {
+  const email = (document.getElementById('alert-email-input')?.value || '').trim();
+  if (!appData.meta) appData.meta = {};
+  if (email) appData.meta.alertEmail = email;
+  else delete appData.meta.alertEmail;
   markPending();
   await pushToGitHub(true);
-  toast('✅ Alertes enregistrées et publiées sur GitHub.', 'success');
+  toast('✅ Alertes et email enregistrés sur GitHub.', 'success');
 }
 
 // ════════════════════════════════════════════════════════
