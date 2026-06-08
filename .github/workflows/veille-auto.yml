@@ -273,18 +273,20 @@ jobs:
               'Vérifiez les nouvelles entrées et ajustez leur priorité.',
             ].join('\n'));
 
-      - name: Préparer l'adresse email destinataire
+      - name: Préparer les adresses email destinataires
         if: steps.commit.outputs.changed == 'true'
         id: mail-prep
         run: |
-          EMAIL=$(node -e "
+          EMAILS=$(node -e "
             try {
               const d = JSON.parse(require('fs').readFileSync('data.json','utf8'));
-              console.log(d.meta && d.meta.alertEmail ? d.meta.alertEmail : '');
+              const arr = d.meta && d.meta.alertEmails && d.meta.alertEmails.length
+                ? d.meta.alertEmails
+                : (d.meta && d.meta.alertEmail ? [d.meta.alertEmail] : []);
+              console.log(arr.join(','));
             } catch(e) { console.log(''); }
           ")
-          echo "to=$EMAIL" >> $GITHUB_OUTPUT
-          echo "has_email=$([ -n '$EMAIL' ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "to=$EMAILS" >> $GITHUB_OUTPUT
 
       - name: Envoyer l'email d'alerte
         if: steps.commit.outputs.changed == 'true' && steps.mail-prep.outputs.to != ''

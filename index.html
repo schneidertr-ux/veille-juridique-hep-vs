@@ -629,20 +629,22 @@
       Le workflow hebdomadaire détecte les nouvelles entrées correspondant à vos mots-clés
       et envoie un <strong>email récapitulatif</strong> + crée une Issue GitHub.
     </p>
-    <!-- Adresse email destinataire -->
+    <!-- Adresses email destinataires (multi) -->
     <div style="margin-bottom:.9rem">
       <label style="font-size:.71rem;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:.3rem">
-        📧 Adresse de réception des alertes
+        📧 Adresses de réception des alertes
       </label>
-      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+      <div style="display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap">
         <input type="email" id="alert-email-input" placeholder="ex: tobias@hep-vs.ch"
-          style="flex:1;min-width:220px;padding:.4rem .7rem;border:1.5px solid var(--border-mid);border-radius:var(--radius);font-size:.85rem;font-family:inherit" />
-        <span style="font-size:.72rem;color:var(--text-muted)">Sauvegardé dans data.json</span>
+          style="flex:1;min-width:220px;padding:.4rem .7rem;border:1.5px solid var(--border-mid);border-radius:var(--radius);font-size:.85rem;font-family:inherit"
+          onkeydown="if(event.key==='Enter')addAlertEmail()" />
+        <button class="action-btn primary" onclick="addAlertEmail()">➕ Ajouter</button>
       </div>
-      <div style="margin-top:.4rem;padding:.5rem .7rem;background:var(--info-bg);border:1px solid var(--info-brd);border-radius:5px;font-size:.72rem;color:var(--info-clr)">
-        ℹ️ L'envoi email nécessite un <strong>App Password Gmail</strong> stocké dans les Secrets GitHub
+      <div id="alert-email-chips" style="display:flex;gap:.4rem;flex-wrap:wrap;min-height:1.8rem;margin-bottom:.5rem"></div>
+      <div style="padding:.5rem .7rem;background:var(--info-bg);border:1px solid var(--info-brd);border-radius:5px;font-size:.72rem;color:var(--info-clr)">
+        ℹ️ Nécessite un <strong>App Password Gmail</strong> dans les Secrets GitHub
         (<code>MAIL_PASSWORD</code>). <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer">Créer un App Password →</a>
-        <br>Puis dans GitHub : <a href="https://github.com/schneidertr-ux/veille-juridique-hep-vs/settings/secrets/actions" target="_blank" rel="noreferrer">Settings → Secrets → MAIL_PASSWORD</a>
+        · <a href="https://github.com/schneidertr-ux/veille-juridique-hep-vs/settings/secrets/actions" target="_blank" rel="noreferrer">Configurer MAIL_PASSWORD</a>
       </div>
     </div>
     <div style="display:flex;gap:.5rem;margin-bottom:.7rem;flex-wrap:wrap">
@@ -1066,6 +1068,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   buildHepFilter();
   renderSnfPreloaded();
   renderAlertChips();
+  renderAlertEmailChips();
   window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display='block'; });
   window.addEventListener('online',  () => { document.getElementById('offline-banner').style.display='none'; });
   if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
@@ -1114,8 +1117,7 @@ function toggleSettings() {
   btn.setAttribute('aria-expanded', !open);
   if (!open) {
     renderAlertChips();
-    const emailEl = document.getElementById('alert-email-input');
-    if (emailEl) emailEl.value = appData.meta?.alertEmail || '';
+    renderAlertEmailChips();
   }
 }
 
@@ -2334,14 +2336,50 @@ function removeAlertKeyword(idx) {
   toast(`🗑️ "${kw}" supprimé.`, 'success');
 }
 
-async function saveAlertKeywords() {
-  const email = (document.getElementById('alert-email-input')?.value || '').trim();
+function renderAlertEmailChips() {
+  const emails = appData.meta?.alertEmails || [];
+  const el = document.getElementById('alert-email-chips');
+  if (!el) return;
+  if (!emails.length) {
+    el.innerHTML = '<span style="font-size:.78rem;color:var(--text-muted);font-style:italic">Aucune adresse configurée</span>';
+    return;
+  }
+  el.innerHTML = emails.map((email, i) => `
+    <span style="display:inline-flex;align-items:center;gap:.3rem;background:#1D4ED8;color:#fff;
+      border-radius:20px;padding:.22rem .7rem;font-size:.78rem;font-weight:600">
+      📧 ${esc(email)}
+      <button onclick="removeAlertEmail(${i})"
+        style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:.85rem;padding:0;line-height:1;margin-left:.1rem"
+        aria-label="Supprimer ${esc(email)}">✕</button>
+    </span>`).join('');
+}
+
+function addAlertEmail() {
+  const inp = document.getElementById('alert-email-input');
+  const email = (inp?.value || '').trim().toLowerCase();
+  if (!email || !email.includes('@')) { toast('Adresse email invalide.', 'error'); return; }
   if (!appData.meta) appData.meta = {};
-  if (email) appData.meta.alertEmail = email;
-  else delete appData.meta.alertEmail;
+  if (!appData.meta.alertEmails) appData.meta.alertEmails = [];
+  if (appData.meta.alertEmails.includes(email)) { toast('Cette adresse est déjà dans la liste.', 'error'); return; }
+  appData.meta.alertEmails.push(email);
+  inp.value = '';
+  renderAlertEmailChips();
+  toast(`📧 "${email}" ajouté — n'oubliez pas d'enregistrer.`, 'success');
+}
+
+function removeAlertEmail(idx) {
+  if (!appData.meta?.alertEmails) return;
+  const email = appData.meta.alertEmails[idx];
+  appData.meta.alertEmails.splice(idx, 1);
+  renderAlertEmailChips();
+  toast(`🗑️ "${email}" supprimé.`, 'success');
+}
+
+async function saveAlertKeywords() {
+  if (!appData.meta) appData.meta = {};
   markPending();
   await pushToGitHub(true);
-  toast('✅ Alertes et email enregistrés sur GitHub.', 'success');
+  toast('✅ Alertes enregistrées et publiées sur GitHub.', 'success');
 }
 
 // ════════════════════════════════════════════════════════
