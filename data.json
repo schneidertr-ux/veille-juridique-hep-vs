@@ -1,9 +1,14 @@
 {
   "meta": {
-    "lastUpdated": "2026-03-10",
+    "lastUpdated": "2026-06-08",
     "updateIntervalDays": 30,
     "title": "Veille juridique HEP-VS",
     "changelog": [
+      {
+        "date": "2026-06-08",
+        "author": "veille-bot",
+        "notes": "Pré-chargement initial données FNS — 10 projets."
+      },
       {
         "date": "2026-03-10",
         "author": "Tobias",
@@ -552,5 +557,146 @@
       ]
     }
   ],
-  "sources_nationales": []
+  "sources_nationales": [
+    {
+      "id": "fns-241892",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Understanding Others",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 9900,
+      "description": "",
+      "url": "https://data.snf.ch/grants/241892",
+      "impacts": []
+    },
+    {
+      "id": "fns-241699",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Einschätzungen von KI-Systemen als Beweismittel in Strafverfahren",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 6656,
+      "description": "",
+      "url": "https://data.snf.ch/grants/241699",
+      "impacts": []
+    },
+    {
+      "id": "fns-241657",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Policy Enactment und seine Paradoxien: Zur Rekontextualisierung politischer Reformabsichten im Bildungssystem",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 3500,
+      "description": "",
+      "url": "https://data.snf.ch/grants/241657",
+      "impacts": []
+    },
+    {
+      "id": "fns-241640",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Mountains of Gold: Uncovering the Architecture of Swiss Banking",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 12600,
+      "description": "",
+      "url": "https://data.snf.ch/grants/241640",
+      "impacts": []
+    },
+    {
+      "id": "fns-241619",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "From theory to practice: Prototyping lab-in-the-field experiments for sustainable farming practices",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 4200,
+      "description": "",
+      "url": "https://data.snf.ch/grants/241619",
+      "impacts": []
+    },
+    {
+      "id": "fns-241546",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Versorgung von vulnerablen Personen mit Arzneimitteln: Härtefallklauseln im Schweizer Arzneimittel- und Krankenversicherungsrecht",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 8190,
+      "description": "",
+      "url": "https://data.snf.ch/grants/241546",
+      "impacts": []
+    },
+    {
+      "id": "fns-241490",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Das Johannesevangelium in mittelalterlicher Rezeption",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 12500,
+      "description": "",
+      "url": "https://data.snf.ch/grants/241490",
+      "impacts": []
+    },
+    {
+      "id": "fns-240333",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "La investigación en Filología Hispánica: humanidades digitales, corpus y estándar TEI",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 6104,
+      "description": "",
+      "url": "https://data.snf.ch/grants/240333",
+      "impacts": []
+    },
+    {
+      "id": "fns-239622",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Schreiben in der Diaspora. Der Schriftsteller und Musiker Hermann Grab zwischen Prag, Heidelberg und New York",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 6490,
+      "description": "",
+      "url": "https://data.snf.ch/grants/239622",
+      "impacts": []
+    },
+    {
+      "id": "fns-239520",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Sorgearbeit, Sorgebeziehungen und das Recht – Caring and the law",
+      "date": "",
+      "dateFin": "",
+      "responsable": "",
+      "institution": "",
+      "montant": 17868,
+      "description": "",
+      "url": "https://data.snf.ch/grants/239520",
+      "impacts": []
+    }
+  ]
 }

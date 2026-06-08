@@ -757,9 +757,13 @@
             </div>
             <button id="snf-search-btn" class="action-btn primary" onclick="veilleSnsfSearch()">🔍 Rechercher</button>
           </div>
-          <div style="font-size:.72rem;color:var(--text-muted);margin-top:.4rem">Source : <a href="https://data.snf.ch" target="_blank" rel="noreferrer">data.snf.ch</a> — API REST publique</div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:.4rem">
+            Source : <a href="https://data.snf.ch" target="_blank" rel="noreferrer">data.snf.ch</a> — API REST publique · CORS bloqué depuis le navigateur → <strong>données pré-chargées ci-dessous via GitHub Actions (MAJ hebdomadaire)</strong>
+          </div>
         </div>
         <div id="snf-status" style="font-size:.78rem;color:var(--text-muted);margin:.5rem 0;min-height:1em" aria-live="polite"></div>
+        <!-- Données pré-chargées depuis data.json (alimentées par GitHub Actions) -->
+        <div id="snf-preloaded" style="margin-bottom:1rem"></div>
         <div id="snf-results"></div>
       </div>
 
@@ -965,7 +969,12 @@ let _editContext = { type:null, id:null };
 let _veilleResults = [];
 let _veilleParlResults = [];
 let _vExpanded = {};
-const VPARL_PROXY_DEFAULT = 'https://api.codetabs.com/v1/proxy/?quest=';
+const VPARL_PROXY_DEFAULT = 'https://api.allorigins.win/raw?url=';
+const VPARL_PROXY_FALLBACKS = [
+  'https://api.allorigins.win/raw?url=',
+  'https://api.codetabs.com/v1/proxy/?quest=',
+  'https://corsproxy.io/?'
+];
 const VPARL_API_BASE = 'https://parlement.vs.ch/api/fe/v1';
 const VPARL_PUBLIC_BASE = 'https://parlement.vs.ch/fr';
 let _activeFilters = { text:'', type:'', hep:'', tags:[], categorie:'' };
@@ -983,6 +992,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   checkUpdateStatus();
   buildTagPills();
   buildHepFilter();
+  renderSnfPreloaded();
   window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display='block'; });
   window.addEventListener('online',  () => { document.getElementById('offline-banner').style.display='none'; });
   if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
@@ -1819,14 +1829,32 @@ function saveVParlProxy() {
   document.getElementById('vparl-proxy-cfg').style.display = 'none';
 }
 
-function vparlFetch(path) {
+async function vparlFetch(path) {
   const apiUrl = VPARL_API_BASE + path;
-  const proxy = getVParlProxy();
-  const url = proxy ? (proxy + encodeURIComponent(apiUrl)) : apiUrl;
-  return fetch(url).then(r => {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  });
+  // Build proxy list: user-configured proxy first, then fallbacks
+  const userProxy = getVParlProxy();
+  const proxies = userProxy
+    ? [userProxy, ...VPARL_PROXY_FALLBACKS.filter(p => p !== userProxy)]
+    : VPARL_PROXY_FALLBACKS;
+
+  let lastErr;
+  for (const proxy of proxies) {
+    const url = proxy + encodeURIComponent(apiUrl);
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      // allorigins wraps in {"contents":"..."} — unwrap if needed
+      try {
+        const j = JSON.parse(text);
+        if (j && j.contents !== undefined) return JSON.parse(j.contents);
+        return j;
+      } catch(_) { throw new Error('JSON invalide'); }
+    } catch(e) {
+      lastErr = e;
+    }
+  }
+  throw new Error(lastErr?.message || 'Tous les proxies ont échoué');
 }
 
 function stripHtml(s) { return (s||'').replace(/<[^>]+>/g,''); }
@@ -2401,6 +2429,32 @@ async function refreshAllNews() {
 // ════════════════════════════════════════════════════════
 // SOURCES NATIONALES — FNS / SNSF
 // ════════════════════════════════════════════════════════
+function renderSnfPreloaded() {
+  const el = document.getElementById('snf-preloaded');
+  if (!el) return;
+  const items = (appData.sources_nationales || []).filter(x => x.source === 'fns');
+  if (!items.length) {
+    el.innerHTML = '<div class="alert alert-info" style="font-size:.8rem">Aucune donnée FNS pré-chargée. Le workflow GitHub Actions alimentera cette section chaque lundi.</div>';
+    return;
+  }
+  el.innerHTML = `
+    <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:.5rem">
+      📦 <strong>${items.length} projet(s) FNS</strong> issus de la dernière mise à jour automatique
+    </div>
+    ${items.map(g => `
+    <div class="vcard" style="border-left-color:var(--navy)">
+      <div class="vcard-header">
+        <span class="vcard-court" style="background:var(--navy);color:#fff">FNS</span>
+        <span class="vcard-date">${esc(g.date||'')}</span>
+      </div>
+      <div class="vcard-title">${esc(g.titre||'')}</div>
+      <div style="font-size:.78rem;color:var(--text-sec);margin-bottom:.35rem">${esc(g.description||'')}</div>
+      <div class="vcard-actions">
+        <a href="${esc(g.url||'https://data.snf.ch')}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
+      </div>
+    </div>`).join('')}`;
+}
+
 async function veilleSnsfSearch() {
   const btn = document.getElementById('snf-search-btn');
   const keyword = document.getElementById('snf-keyword').value.trim() || 'HEP formation enseignants';
@@ -2484,8 +2538,12 @@ async function veilleSnsfSearch() {
         return;
       } catch (_) {}
     }
-    statusEl.innerHTML = `<span style="color:var(--warn)">⚠️ L'API FNS nécessite un proxy CORS. Configurez-en un dans Parlement &gt; Configuration proxy.</span>`;
-    resultsEl.innerHTML = `<div class="alert alert-warn">Accès direct bloqué par CORS. <a href="https://data.snf.ch/grants" target="_blank" rel="noreferrer">Consulter data.snf.ch directement</a>.</div>`;
+    statusEl.innerHTML = `<span style="color:var(--text-muted)">ℹ️ Recherche live indisponible — l'API FNS bloque les appels navigateur (CORS). Les données sont chargées automatiquement chaque semaine via GitHub Actions.</span>`;
+    resultsEl.innerHTML = `<div class="alert alert-info">
+      La recherche live sur data.snf.ch n'est pas accessible depuis le navigateur (restriction CORS de l'API).
+      <br>👉 <a href="https://data.snf.ch/grants?q=${encodeURIComponent(keyword)}" target="_blank" rel="noreferrer">Rechercher <strong>${esc(keyword)}</strong> directement sur data.snf.ch</a>
+      <br><small>Les projets pertinents sont pré-chargés automatiquement chaque lundi dans la section ci-dessus.</small>
+    </div>`;
   } finally {
     btn.disabled = false;
     btn.innerHTML = '🔍 Rechercher';
