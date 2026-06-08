@@ -139,6 +139,33 @@ jobs:
               console.warn('Parlement fetch error:', e.message);
             }
 
+            // --- Vérifier alertes par mot-clé ---
+            const alertKeywords = (appData.meta && appData.meta.alertKeywords) || [];
+            const newEntries = [
+              ...(appData.sources_nationales||[]).slice(-20),
+              ...(appData.parlementaire||[]).slice(0,20)
+            ];
+            const triggeredAlerts = [];
+            for (const kw of alertKeywords) {
+              const kwLower = kw.toLowerCase();
+              for (const entry of newEntries) {
+                const text = [
+                  entry.titre||entry.title||'',
+                  entry.description||entry.content||'',
+                  entry.responsable||'',
+                  entry.institution||''
+                ].join(' ').toLowerCase();
+                if (text.includes(kwLower)) {
+                  triggeredAlerts.push({ kw, entry: entry.titre||entry.title||entry.id });
+                  break;
+                }
+              }
+            }
+            if (triggeredAlerts.length) {
+              fs.writeFileSync('triggered_alerts.json', JSON.stringify(triggeredAlerts), 'utf8');
+              console.log('Alertes déclenchées:', triggeredAlerts.map(a=>a.kw).join(', '));
+            }
+
             // --- Mettre à jour lastUpdated ---
             if (!appData.meta) appData.meta = {};
             appData.meta.lastUpdated = new Date().toISOString().slice(0, 10);
@@ -179,17 +206,39 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
             const date = new Date().toLocaleDateString('fr-CH', {year:'numeric',month:'long',day:'numeric'});
             const url = `https://${context.repo.owner}.github.io/${context.repo.repo}/`;
+
+            // Lire les alertes déclenchées si elles existent
+            let alertsSection = '';
+            try {
+              const alerts = JSON.parse(fs.readFileSync('triggered_alerts.json', 'utf8'));
+              if (alerts.length) {
+                alertsSection = [
+                  '',
+                  '### 🚨 Alertes mot-clé déclenchées',
+                  ...alerts.map(a => `- Mot-clé **"${a.kw}"** → trouvé dans : _${a.entry}_`),
+                  ''
+                ].join('\n');
+              }
+            } catch(_) {}
+
+            const labels = ['veille-auto', 'à-vérifier'];
+            const isAlert = alertsSection.length > 0;
+            if (isAlert) labels.push('alerte-mot-clé');
+
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `🔔 Veille juridique — Nouvelles entrées (${date})`,
+              title: isAlert
+                ? `🚨 Veille juridique — Alerte mot-clé déclenchée (${date})`
+                : `🔔 Veille juridique — Nouvelles entrées (${date})`,
               body: [
                 '## Mise à jour automatique de la veille juridique HEP-VS',
                 '',
                 `Date : **${date}**`,
-                '',
+                alertsSection,
                 '### Sources interrogées',
                 '- 🔬 **FNS / SNSF** — `data.snf.ch`',
                 '- 📜 **Parlement VS** — `parlement.vs.ch`',
@@ -197,11 +246,11 @@ jobs:
                 '### Action requise',
                 `Consultez la compilation mise à jour : [${url}](${url})`,
                 '',
-                `Vérifiez les nouvelles entrées et ajustez leur priorité si nécessaire.`,
+                'Vérifiez les nouvelles entrées et ajustez leur priorité si nécessaire.',
                 '',
                 '---',
                 '_Issue créée automatiquement par le workflow `veille-auto.yml`_',
                 '_Fermez cette issue après vérification._'
               ].join('\n'),
-              labels: ['veille-auto', 'à-vérifier']
+              labels
             });

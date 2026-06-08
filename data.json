@@ -3,6 +3,7 @@
     "lastUpdated": "2026-06-08",
     "updateIntervalDays": 30,
     "title": "Veille juridique HEP-VS",
+    "alertKeywords": ["hep-vs", "accréditation", "lehe", "formation des enseignants", "valais"],
     "changelog": [
       {
         "date": "2026-06-08",

@@ -621,6 +621,25 @@
       <button class="action-btn secondary" onclick="downloadGHAction()">⚡ Télécharger GitHub Action (alertes email)</button>
       <button class="action-btn secondary" onclick="toggleSettings()">Fermer</button>
     </div>
+
+    <!-- ══ ALERTES PAR MOT-CLÉ ══ -->
+    <hr style="margin:1.25rem 0;border:none;border-top:1.5px solid var(--border)" />
+    <h2 style="font-size:.95rem;color:var(--navy);margin-bottom:.5rem">🔔 Alertes par mot-clé</h2>
+    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.85rem">
+      Le workflow hebdomadaire crée une Issue GitHub dès qu'une nouvelle entrée contient un de ces mots-clés.
+      Vous recevrez une notification email automatique selon vos réglages GitHub.
+    </p>
+    <div style="display:flex;gap:.5rem;margin-bottom:.7rem;flex-wrap:wrap">
+      <input type="text" id="alert-kw-input" placeholder="ex: accréditation, LEHE, Innosuisse…"
+        style="flex:1;min-width:200px;padding:.4rem .7rem;border:1.5px solid var(--border-mid);border-radius:var(--radius);font-size:.85rem;font-family:inherit"
+        onkeydown="if(event.key==='Enter')addAlertKeyword()" />
+      <button class="action-btn primary" onclick="addAlertKeyword()">➕ Ajouter</button>
+    </div>
+    <div id="alert-kw-chips" style="display:flex;gap:.4rem;flex-wrap:wrap;min-height:2rem;margin-bottom:.6rem"></div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="action-btn secondary" onclick="saveAlertKeywords()">💾 Enregistrer les alertes</button>
+      <span style="font-size:.72rem;color:var(--text-muted);align-self:center">Sauvegardés dans data.json · actifs au prochain cycle du workflow</span>
+    </div>
   </div>
 </div>
 
@@ -1030,6 +1049,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   buildTagPills();
   buildHepFilter();
   renderSnfPreloaded();
+  renderAlertChips();
   window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display='block'; });
   window.addEventListener('online',  () => { document.getElementById('offline-banner').style.display='none'; });
   if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
@@ -1076,6 +1096,7 @@ function toggleSettings() {
   const open = p.style.display !== 'none' && p.style.display !== '';
   p.style.display = open ? 'none' : 'block';
   btn.setAttribute('aria-expanded', !open);
+  if (!open) renderAlertChips(); // refresh chips when opening
 }
 
 // ════════════════════════════════════════════════════════
@@ -2246,6 +2267,57 @@ function printPage() {
   document.querySelectorAll('.collapsible.collapsed').forEach(el=>el.classList.remove('collapsed'));
   document.querySelectorAll('.collapsible-content.collapsed').forEach(el=>el.classList.remove('collapsed'));
   window.print();
+}
+
+// ════════════════════════════════════════════════════════
+// ALERTES PAR MOT-CLÉ
+// ════════════════════════════════════════════════════════
+function renderAlertChips() {
+  const kws = appData.meta?.alertKeywords || [];
+  const el = document.getElementById('alert-kw-chips');
+  if (!el) return;
+  if (!kws.length) {
+    el.innerHTML = '<span style="font-size:.78rem;color:var(--text-muted);font-style:italic">Aucun mot-clé configuré</span>';
+    return;
+  }
+  el.innerHTML = kws.map((kw,i) => `
+    <span style="display:inline-flex;align-items:center;gap:.3rem;background:var(--navy);color:#fff;
+      border-radius:20px;padding:.22rem .7rem;font-size:.78rem;font-weight:600">
+      🔔 ${esc(kw)}
+      <button onclick="removeAlertKeyword(${i})"
+        style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:.85rem;
+               padding:0;line-height:1;margin-left:.1rem"
+        aria-label="Supprimer ${esc(kw)}">✕</button>
+    </span>`).join('');
+}
+
+function addAlertKeyword() {
+  const inp = document.getElementById('alert-kw-input');
+  const kw = (inp?.value || '').trim().toLowerCase();
+  if (!kw) return;
+  if (!appData.meta) appData.meta = {};
+  if (!appData.meta.alertKeywords) appData.meta.alertKeywords = [];
+  if (appData.meta.alertKeywords.includes(kw)) {
+    toast('Ce mot-clé est déjà dans la liste.', 'error'); return;
+  }
+  appData.meta.alertKeywords.push(kw);
+  inp.value = '';
+  renderAlertChips();
+  toast(`🔔 "${kw}" ajouté — n'oubliez pas d'enregistrer.`, 'success');
+}
+
+function removeAlertKeyword(idx) {
+  if (!appData.meta?.alertKeywords) return;
+  const kw = appData.meta.alertKeywords[idx];
+  appData.meta.alertKeywords.splice(idx, 1);
+  renderAlertChips();
+  toast(`🗑️ "${kw}" supprimé.`, 'success');
+}
+
+async function saveAlertKeywords() {
+  markPending();
+  await pushToGitHub(true);
+  toast('✅ Alertes enregistrées et publiées sur GitHub.', 'success');
 }
 
 // ════════════════════════════════════════════════════════
