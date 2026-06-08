@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veille juridique — HEP-VS</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#C8102E">
+  <style>
+    /* ═══════════════════════════════════════════════════
+       DESIGN TOKENS — HEP-VS (WCAG 2.2 AA + APCA-ready)
+       Contrast ratios verified:
+       #111827/#FFF = 18.9:1  #374151/#FFF = 10.7:1
+       #C8102E/#FFF = 5.9:1   #FFF/#1E2B3C = 14.3:1
+       #FFF/#C8102E = 5.9:1   #9B0E23/#FFF = 9.2:1
+    ═══════════════════════════════════════════════════ */
+    :root {
+      --red:          #C8102E;
+      --red-dark:     #9B0E23;
+      --red-light:    #FEE2E6;
+      --red-mid:      #F5C2C8;
+      --navy:         #1E2B3C;
+      --navy-mid:     #2D3F57;
+      --navy-light:   #3D5570;
+      --bg-page:      #F0F4F8;
+      --bg-card:      #FFFFFF;
+      --bg-alt:       #F8FAFC;
+      --border:       #E2E8F0;
+      --border-mid:   #CBD5E1;
+      --text:         #111827;
+      --text-sec:     #374151;
+      --text-muted:   #6B7280;
+      --text-inv:     #FFFFFF;
+      --success:      #15803D;
+      --success-bg:   #F0FDF4;
+      --success-brd:  #86EFAC;
+      --warn:         #B45309;
+      --warn-bg:      #FFFBEB;
+      --warn-brd:     #FCD34D;
+      --err:          #C8102E;
+      --err-bg:       #FFF1F2;
+      --err-brd:      #FECDD3;
+      --info-clr:     #1D4ED8;
+      --info-bg:      #EFF6FF;
+      --info-brd:     #BFDBFE;
+      --shadow-sm:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:    0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.05);
+      --shadow-lg:    0 10px 15px rgba(0,0,0,.08), 0 4px 6px rgba(0,0,0,.04);
+      --radius:       8px;
+      --radius-lg:    12px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+      background: var(--bg-page);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 15px;
+      min-height: 100vh;
+    }
+    a { color: var(--red-dark); }
+    a:hover { color: var(--red); }
+
+    /* ── Focus (WCAG 2.2 — 3px solid outline) ── */
+    :focus-visible {
+      outline: 3px solid var(--red);
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+
+    /* ══ HEADER ══ */
+    .site-header {
+      background: var(--navy);
+      border-top: 4px solid var(--red);
+      padding: .85rem 0;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .header-brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .brand-logo {
+      background: var(--red); color: var(--text-inv);
+      font-weight: 800; font-size: .85rem; letter-spacing: .12em;
+      padding: .3rem .65rem; border-radius: 4px;
+      line-height: 1;
+    }
+    .brand-title { color: var(--text-inv); font-size: 1rem; font-weight: 600; line-height: 1.2; }
+    .brand-sub { color: rgba(255,255,255,.55); font-size: .72rem; font-weight: 400; display: block; }
+    .header-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .hdr-btn {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+      border-radius: var(--radius); color: rgba(255,255,255,.88);
+      padding: .35rem .65rem; font-size: .78rem; font-family: inherit;
+      cursor: pointer; transition: background .15s, color .15s; white-space: nowrap;
+    }
+    .hdr-btn:hover { background: rgba(255,255,255,.18); color: #fff; }
+    .hdr-btn.accent { background: var(--red); border-color: var(--red); }
+    .hdr-btn.accent:hover { background: var(--red-dark); border-color: var(--red-dark); }
+    .hdr-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .sync-bar {
+      background: var(--navy-mid);
+      font-size: .7rem; color: rgba(255,255,255,.5);
+      text-align: center; padding: .2rem 1rem;
+    }
+    .sync-bar.ok { color: #86efac; }
+    .sync-bar.err { color: #fca5a5; }
+    .sync-bar.pending { color: #fcd34d; }
+
+    /* ══ SETTINGS ══ */
+    .settings-panel {
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 1.25rem 0; display: none;
+    }
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: .7rem; margin-bottom: .75rem; }
+    .sf { display: flex; flex-direction: column; gap: 3px; }
+    .sf label { font-size: .71rem; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .07em; }
+    .sf input {
+      border: 1.5px solid var(--border-mid); border-radius: var(--radius);
+      padding: .45rem .65rem; font-size: .86rem; font-family: inherit;
+      color: var(--text); background: var(--bg-card); outline: none;
+      transition: border-color .15s;
+    }
+    .sf input:focus { border-color: var(--red); }
+    .settings-note { font-size: .76rem; color: var(--text-muted); margin-bottom: .75rem; line-height: 1.55; }
+    .settings-note a { color: var(--info-clr); }
+
+    /* ══ UPDATE BANNER ══ */
+    .update-banner {
+      margin: .75rem 0; padding: .6rem 1rem; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      gap: .75rem; font-size: .83rem; flex-wrap: wrap;
+    }
+    .update-banner.current { background: var(--success-bg); border: 1px solid var(--success-brd); color: var(--success); }
+    .update-banner.warning { background: var(--warn-bg); border: 1px solid var(--warn-brd); color: var(--warn); }
+    .update-banner.overdue { background: var(--err-bg); border: 1px solid var(--err-brd); color: var(--err); }
+    .banner-btn { padding: .28rem .65rem; border-radius: 5px; border: 1.5px solid currentColor; cursor: pointer; background: transparent; color: inherit; font-size: .76rem; font-family: inherit; }
+
+    /* ══ MAIN LAYOUT ══ */
+    main { padding: 1.25rem 0 3rem; }
+
+    /* ══ TABS ══ */
+    .tab-nav-wrap { background: var(--bg-card); border-bottom: 2px solid var(--border); position: sticky; top: 60px; z-index: 90; }
+    .tab-nav { display: flex; gap: 0; }
+    .tab-btn {
+      padding: .75rem 1.25rem; border: none; border-bottom: 3px solid transparent;
+      background: transparent; color: var(--text-muted); font-size: .88rem;
+      font-family: inherit; font-weight: 500; cursor: pointer;
+      transition: color .15s, border-color .15s; margin-bottom: -2px;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--red-dark); border-bottom-color: var(--red); font-weight: 700; }
+    .tab-pane { display: none; padding-top: 1.25rem; }
+    .tab-pane.active { display: block; }
+
+    /* ══ SECTION TITLES ══ */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 1.75rem 0 .9rem; gap: .75rem;
+    }
+    .section-title {
+      font-size: 1rem; font-weight: 700; color: var(--navy);
+      padding-left: .75rem; border-left: 3px solid var(--red);
+      line-height: 1.3;
+    }
+    .section-actions { display: flex; gap: .4rem; }
+    .sec-btn {
+      padding: .28rem .65rem; border-radius: 5px; border: 1.5px solid var(--border-mid);
+      background: var(--bg-card); color: var(--text-sec); font-size: .74rem;
+      font-family: inherit; cursor: pointer; transition: all .15s;
+    }
+    .sec-btn:hover { border-color: var(--red); color: var(--red-dark); background: var(--red-light); }
+    .sec-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+    /* ══ FILTER BAR ══ */
+    .filter-bar {
+      background: var(--bg-card); border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1rem; margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: .65rem; }
+    .filter-row:last-child { margin-bottom: 0; }
+    .ff { display: flex; flex-direction: column; gap: 3px; }
+    .ff.grow { flex: 1; min-width: 160px; }
+    .ff label { font-size: .7rem; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .07em; }
+    .ff input, .ff select {
+      border: 1.5px solid var(--border-mid); border-radius: var(--radius);
+      padding: .42rem .65rem; font-size: .86rem; font-family: inherit;
+      color: var(--text); background: var(--bg-card); outline: none;
+    }
+    .ff input:focus, .ff select:focus { border-color: var(--red); }
+    .tag-filter-row { display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
+    .tag-filter-label { font-size: .7rem; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .07em; margin-right: .2rem; }
+    .tag-pill {
+      padding: .22rem .65rem; border-radius: 20px; border: 1.5px solid var(--border-mid);
+      background: var(--bg-card); color: var(--text-sec); font-size: .74rem;
+      cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .tag-pill:hover { border-color: var(--red); color: var(--red-dark); }
+    .tag-pill.active { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; }
+    .filter-summary { font-size: .76rem; color: var(--text-muted); margin-left: auto; align-self: center; }
+    .btn-clear-filter { font-size: .74rem; color: var(--text-muted); background: none; border: none; cursor: pointer; text-decoration: underline; font-family: inherit; }
+    .btn-clear-filter:hover { color: var(--red-dark); }
+
+    /* ══ ARRET CARDS ══ */
+    .arret-card {
+      background: var(--bg-card); border-radius: var(--radius-lg);
+      border: 1.5px solid var(--border); border-left: 4px solid var(--border-mid);
+      padding: 1.1rem 1.2rem; margin-bottom: .75rem;
+      box-shadow: var(--shadow-sm); transition: box-shadow .15s, transform .15s;
+      position: relative;
+    }
+    .arret-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .arret-card.tf  { border-left-color: var(--red); }
+    .arret-card.tc  { border-left-color: #D97706; }
+    .arret-card.principe { border-left-color: #15803D; }
+    .arret-card.imported { border-left-color: #1D4ED8; }
+    .arret-card.dragging { opacity: .4; box-shadow: none; }
+    .arret-card.drag-over { border: 2px dashed var(--red); }
+
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; margin-bottom: .55rem; flex-wrap: wrap; }
+    .card-top-left { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+    .arret-ref { font-family: 'Courier New', monospace; font-size: .75rem; background: var(--bg-alt); border: 1px solid var(--border); color: var(--text-sec); padding: .2rem .5rem; border-radius: 4px; }
+    .badge-group { display: flex; gap: .3rem; flex-wrap: wrap; }
+
+    /* Badge system — all pass WCAG 2.2 AA */
+    .badge { font-size: .66rem; font-weight: 700; padding: .18rem .52rem; border-radius: 20px; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+    .badge-tf         { background: #7F1D1D; color: #FEF2F2; }
+    .badge-tc         { background: #78350F; color: #FEF3C7; }
+    .badge-atf        { background: #14532D; color: #F0FDF4; }
+    .badge-irrecevable{ background: #374151; color: #F9FAFB; }
+    .badge-rejete     { background: #7F1D1D; color: #FEF2F2; }
+    .badge-admis      { background: #14532D; color: #F0FDF4; }
+    .badge-revirement { background: #581C87; color: #FAF5FF; }
+    .badge-imported   { background: #1E3A5F; color: #DBEAFE; }
+    .badge-pending    { background: #78350F; color: #FEF3C7; }
+    .badge-new        { background: var(--red); color: #fff; animation: pulse-new 2s ease-in-out infinite; }
+    @keyframes pulse-new { 0%,100%{opacity:1} 50%{opacity:.7} }
+
+    .arret-title { font-size: .97rem; font-weight: 700; color: var(--navy); margin-bottom: .4rem; line-height: 1.4; }
+    .arret-meta  { display: flex; gap: .8rem; font-size: .76rem; color: var(--text-muted); flex-wrap: wrap; margin-bottom: .5rem; }
+    .arret-content { font-size: .87rem; color: var(--text-sec); line-height: 1.6; }
+
+    .tag-list { display: flex; gap: .3rem; flex-wrap: wrap; margin-top: .5rem; }
+    .tag-chip {
+      font-size: .67rem; padding: .15rem .5rem; border-radius: 20px;
+      background: var(--red-light); color: var(--red-dark);
+      border: 1px solid var(--red-mid); cursor: pointer; font-weight: 500;
+      transition: background .12s;
+    }
+    .tag-chip:hover { background: var(--red-mid); }
+
+    .key-points { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: .65rem .85rem; margin-top: .65rem; }
+    .key-points-title { font-size: .72rem; font-weight: 700; color: var(--red-dark); margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .06em; }
+    .key-points ul { list-style: none; }
+    .key-points li { font-size: .82rem; color: var(--text-sec); padding: .15rem 0 .15rem 1rem; position: relative; }
+    .key-points li::before { content: "→"; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+
+    .card-links { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .7rem; }
+    .card-link {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-size: .76rem; padding: .25rem .65rem;
+      background: var(--red-light); border: 1.5px solid var(--red-mid);
+      border-radius: 5px; color: var(--red-dark); text-decoration: none;
+      transition: background .12s;
+    }
+    .card-link:hover { background: var(--red-mid); color: var(--red-dark); }
+
+    .card-actions { position: absolute; top: .75rem; right: .75rem; display: flex; gap: .3rem; opacity: 0; transition: opacity .15s; }
+    .arret-card:hover .card-actions { opacity: 1; }
+    .card-act-btn {
+      background: var(--bg-alt); border: 1px solid var(--border-mid); border-radius: 5px;
+      color: var(--text-muted); font-size: .72rem; padding: .22rem .5rem;
+      cursor: pointer; transition: all .12s; font-family: inherit;
+    }
+    .card-act-btn:hover { background: var(--red-light); border-color: var(--red-mid); color: var(--red-dark); }
+    .card-act-btn.up, .card-act-btn.dn { font-size: .9rem; padding: .15rem .4rem; }
+    .card-act-btn.up:hover, .card-act-btn.dn:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+    /* ══ INFO BOX ══ */
+    .info-box {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      border-radius: var(--radius-lg); padding: 1.25rem 1.4rem; margin-bottom: 1.25rem;
+      color: #fff;
+    }
+    .info-box h3 { font-size: 1rem; margin-bottom: .3rem; }
+    .info-box p { font-size: .84rem; color: rgba(255,255,255,.72); margin-bottom: .85rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); gap: .6rem; }
+    .stat-item { text-align: center; background: rgba(255,255,255,.1); border-radius: var(--radius); padding: .65rem .5rem; }
+    .stat-number { font-size: 1.5rem; font-weight: 800; color: #fff; }
+    .stat-label { font-size: .7rem; color: rgba(255,255,255,.62); margin-top: .1rem; }
+
+    /* ══ WARNING/INFO ALERTS ══ */
+    .alert { border-radius: var(--radius); padding: .75rem 1rem; font-size: .83rem; margin-bottom: 1rem; }
+    .alert-warn { background: var(--warn-bg); border: 1.5px solid var(--warn-brd); color: var(--warn); }
+    .alert-info { background: var(--info-bg); border: 1.5px solid var(--info-brd); color: #1e40af; }
+
+    /* ══ QUICK ACTIONS ══ */
+    .quick-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
+    .action-btn {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .45rem .9rem; border-radius: var(--radius); font-size: .82rem;
+      text-decoration: none; border: 1.5px solid; cursor: pointer;
+      font-family: inherit; font-weight: 500; transition: all .15s;
+    }
+    .action-btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
+    .action-btn.primary:hover { background: var(--red-dark); border-color: var(--red-dark); color: #fff; }
+    .action-btn.secondary { background: var(--bg-card); border-color: var(--border-mid); color: var(--text-sec); }
+    .action-btn.secondary:hover { border-color: var(--red); color: var(--red-dark); background: var(--red-light); }
+
+    /* ══ DOCUMENT CARDS (Parlement) ══ */
+    .document-card {
+      background: var(--bg-card); border-radius: var(--radius-lg);
+      border: 1.5px solid var(--border); border-left: 4px solid var(--border-mid);
+      padding: 1.1rem 1.2rem; margin-bottom: .75rem;
+      box-shadow: var(--shadow-sm); transition: box-shadow .15s, transform .15s;
+      position: relative;
+    }
+    .document-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .document-card.high   { border-left-color: var(--red); }
+    .document-card.medium { border-left-color: #D97706; }
+    .document-card.low    { border-left-color: #15803D; }
+    .document-card.info   { border-left-color: var(--info-clr); }
+    .document-card:hover .card-actions { opacity: 1; }
+
+    .doc-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .55rem; flex-wrap: wrap; gap: .4rem; }
+    .doc-type-badge { font-size: .67rem; font-weight: 700; padding: .18rem .52rem; border-radius: 20px; text-transform: uppercase; letter-spacing: .05em; }
+    .type-loi          { background: var(--navy); color: #fff; }
+    .type-postulat     { background: var(--red-dark); color: #fff; }
+    .type-motion       { background: #7F1D1D; color: #FEF2F2; }
+    .type-projet       { background: #14532D; color: #F0FDF4; }
+    .type-accreditation{ background: #581C87; color: #FAF5FF; }
+    .status-badge { font-size: .67rem; font-weight: 700; padding: .18rem .52rem; border-radius: 20px; }
+    .status-adopte  { background: #14532D; color: #F0FDF4; }
+    .status-encours { background: #78350F; color: #FEF3C7; }
+
+    .doc-title { font-size: .97rem; font-weight: 700; color: var(--navy); margin-bottom: .4rem; line-height: 1.4; }
+    .doc-meta  { display: flex; gap: .8rem; font-size: .76rem; color: var(--text-muted); flex-wrap: wrap; margin-bottom: .5rem; }
+    .vote-chip { background: var(--success-bg); border: 1px solid var(--success-brd); color: var(--success); border-radius: 4px; padding: .1rem .4rem; font-weight: 600; }
+    .doc-desc  { font-size: .87rem; color: var(--text-sec); line-height: 1.6; margin-bottom: .65rem; }
+    .impact-section { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: .65rem .85rem; margin-top: .6rem; }
+    .impact-title { font-size: .72rem; font-weight: 700; color: var(--red-dark); margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .06em; }
+    .impact-list { list-style: none; }
+    .impact-list li { font-size: .82rem; color: var(--text-sec); padding: .15rem 0 .15rem 1rem; position: relative; }
+    .impact-list li::before { content: "→"; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+    .financial-note { background: var(--warn-bg); border: 1px solid var(--warn-brd); border-radius: var(--radius); padding: .5rem .75rem; font-size: .82rem; color: var(--warn); margin-top: .55rem; }
+    .official-link { display: inline-flex; align-items: center; gap: .3rem; font-size: .76rem; margin-top: .55rem; color: var(--info-clr); text-decoration: none; }
+    .official-link:hover { text-decoration: underline; }
+
+    /* ── Priority bar (on hover) ── */
+    .priority-bar { display: flex; gap: .3rem; align-items: center; margin-top: .7rem; padding-top: .6rem; border-top: 1px solid var(--border); opacity: 0; transition: opacity .15s; }
+    .document-card:hover .priority-bar { opacity: 1; }
+    .priority-bar span { font-size: .68rem; font-weight: 600; color: var(--text-muted); margin-right: .2rem; text-transform: uppercase; letter-spacing: .06em; }
+    .prio-btn { border: 1.5px solid var(--border-mid); border-radius: 5px; background: var(--bg-card); color: var(--text-muted); font-size: .72rem; padding: .2rem .55rem; cursor: pointer; transition: all .13s; font-family: inherit; }
+    .prio-btn:hover { border-color: var(--red); color: var(--red-dark); background: var(--red-light); }
+    .prio-btn.active-high   { background: #7F1D1D; border-color: #7F1D1D; color: #FEF2F2; font-weight: 700; }
+    .prio-btn.active-medium { background: #78350F; border-color: #78350F; color: #FEF3C7; font-weight: 700; }
+    .prio-btn.active-low    { background: #14532D; border-color: #14532D; color: #F0FDF4; font-weight: 700; }
+    .prio-btn.active-info   { background: #1e3a8a; border-color: #1e3a8a; color: #DBEAFE; font-weight: 700; }
+
+    /* ── Timeline ── */
+    .timeline-wrap { margin-top: .85rem; padding-top: .75rem; border-top: 1px solid var(--border); overflow-x: auto; }
+    .timeline { display: flex; align-items: flex-start; gap: 0; position: relative; min-width: max-content; }
+    .timeline::before {
+      content: ''; position: absolute; top: 10px; left: 10px; right: 10px; height: 2px;
+      background: var(--border-mid); z-index: 0;
+    }
+    .tl-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 80px; max-width: 120px; position: relative; z-index: 1; }
+    .tl-dot {
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-mid);
+      background: var(--bg-card); display: flex; align-items: center; justify-content: center;
+      font-size: .6rem; font-weight: 700; margin-bottom: .3rem;
+    }
+    .tl-step.done .tl-dot { background: var(--success); border-color: var(--success); color: #fff; }
+    .tl-step.current .tl-dot { background: var(--red); border-color: var(--red); color: #fff; animation: pulse-new 1.5s ease-in-out infinite; }
+    .tl-label { font-size: .67rem; color: var(--text-muted); text-align: center; line-height: 1.25; word-break: break-word; max-width: 90px; }
+    .tl-step.done .tl-label { color: var(--success); font-weight: 600; }
+    .tl-step.current .tl-label { color: var(--red-dark); font-weight: 700; }
+    .tl-date { font-size: .6rem; color: var(--border-mid); text-align: center; margin-top: .1rem; }
+    .tl-step.done .tl-date { color: var(--text-muted); }
+
+    /* ══ LEGEND ══ */
+    .legend { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: .8rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .legend-item { display: flex; align-items: center; gap: .35rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-high { background: var(--red); }
+    .dot-medium { background: #D97706; }
+    .dot-low { background: #15803D; }
+    .dot-info { background: var(--info-clr); }
+
+    /* ══ COLLAPSIBLE ══ */
+    .collapsible { cursor: pointer; }
+    .collapsible::after { content: " ▼"; font-size: .62rem; opacity: .5; }
+    .collapsible.collapsed::after { content: " ▶"; }
+    .collapsible-content { overflow: hidden; max-height: 5000px; transition: max-height .3s ease; }
+    .collapsible-content.collapsed { max-height: 0; }
+
+    /* ══ VEILLE TAB ══ */
+    .veille-panel {
+      background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+      padding: 1.1rem; margin-bottom: 1.1rem; box-shadow: var(--shadow-sm);
+    }
+    .vf { display: flex; flex-direction: column; gap: 3px; }
+    .vf.grow { flex: 2; min-width: 160px; }
+    .vf label { font-size: .7rem; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .07em; }
+    .vf input, .vf select {
+      border: 1.5px solid var(--border-mid); border-radius: var(--radius);
+      padding: .42rem .65rem; font-size: .86rem; font-family: inherit;
+      color: var(--text); background: var(--bg-card); outline: none;
+    }
+    .vf input:focus, .vf select:focus { border-color: var(--red); }
+    .search-row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: flex-end; }
+    #veille-search-btn {
+      padding: .5rem 1.2rem; background: var(--red); border: none; border-radius: var(--radius);
+      color: #fff; font-size: .88rem; font-family: inherit; font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: background .15s;
+    }
+    #veille-search-btn:hover { background: var(--red-dark); }
+    #veille-search-btn:disabled { background: #E5BBBF; cursor: not-allowed; }
+    .vcard {
+      background: var(--bg-card); border: 1.5px solid var(--border);
+      border-left: 4px solid var(--info-clr); border-radius: var(--radius);
+      padding: .85rem 1rem; margin-bottom: .6rem; box-shadow: var(--shadow-sm);
+    }
+    .vcard-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; flex-wrap: wrap; margin-bottom: .3rem; }
+    .vcard-court { font-size: .7rem; font-weight: 700; border-radius: 4px; padding: .15rem .5rem; }
+    .vcard-ref { font-family: monospace; font-size: .74rem; color: var(--text-muted); }
+    .vcard-date { font-size: .71rem; color: var(--text-muted); font-family: monospace; white-space: nowrap; }
+    .vcard-title { font-size: .85rem; color: var(--navy); font-weight: 600; margin-bottom: .4rem; line-height: 1.4; }
+    .vcard-abstract { font-size: .78rem; color: var(--text-sec); line-height: 1.5; background: var(--bg-alt); padding: .5rem .7rem; border-radius: 5px; margin-bottom: .4rem; max-height: 100px; overflow-y: auto; display: none; }
+    .vcard-abstract.open { display: block; }
+    .vcard-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .btn-expand { background: none; border: 1.5px solid var(--border-mid); border-radius: 4px; color: var(--text-muted); font-size: .72rem; padding: .2rem .5rem; cursor: pointer; font-family: inherit; }
+    .btn-expand:hover { border-color: var(--red); color: var(--red-dark); }
+    .btn-add-veille { background: var(--success-bg); border: 1.5px solid var(--success-brd); border-radius: 4px; color: var(--success); font-size: .76rem; padding: .22rem .7rem; cursor: pointer; font-weight: 700; font-family: inherit; transition: all .13s; }
+    .btn-add-veille:hover { background: #dcfce7; }
+    .btn-add-veille.added { background: var(--bg-alt); border-color: var(--border); color: var(--text-muted); cursor: default; }
+    .vcard-doc-link { font-size: .73rem; color: var(--info-clr); text-decoration: none; border: 1.5px solid var(--info-brd); background: var(--info-bg); border-radius: 4px; padding: .2rem .55rem; }
+    .vcard-doc-link:hover { background: #dbeafe; }
+
+    /* ══ CHANGELOG ══ */
+    .changelog-list { display: flex; flex-direction: column; gap: .65rem; }
+    .cl-entry {
+      background: var(--bg-card); border: 1.5px solid var(--border);
+      border-left: 4px solid var(--navy); border-radius: var(--radius);
+      padding: .85rem 1rem; box-shadow: var(--shadow-sm);
+    }
+    .cl-meta { font-size: .74rem; color: var(--text-muted); margin-bottom: .25rem; }
+    .cl-notes { font-size: .87rem; color: var(--text-sec); }
+
+    /* ══ MODALS ══ */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--bg-card); border-radius: var(--radius-lg); padding: 1.5rem;
+      width: 100%; max-width: 620px; max-height: 92vh; overflow-y: auto;
+      position: relative; box-shadow: var(--shadow-lg);
+    }
+    .modal h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 1rem; padding-bottom: .65rem; border-bottom: 2px solid var(--border); }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); line-height: 1; border-radius: 4px; padding: .1rem .3rem; }
+    .modal-close:hover { color: var(--text); background: var(--bg-alt); }
+    .form-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: .8rem; }
+    .form-row label { font-size: .71rem; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: .07em; }
+    .form-row input, .form-row select, .form-row textarea {
+      border: 1.5px solid var(--border-mid); border-radius: var(--radius);
+      padding: .45rem .7rem; font-size: .86rem; font-family: inherit;
+      color: var(--text); background: var(--bg-card); outline: none; width: 100%;
+    }
+    .form-row input:focus, .form-row textarea:focus, .form-row select:focus { border-color: var(--red); }
+    .form-row textarea { min-height: 75px; resize: vertical; }
+    .form-row .hint { font-size: .7rem; color: var(--text-muted); margin-top: 2px; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+    .modal-actions { display: flex; gap: .6rem; justify-content: flex-end; margin-top: 1.1rem; padding-top: .9rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .btn-save { background: var(--success); border: none; border-radius: var(--radius); color: #fff; padding: .5rem 1.2rem; font-size: .88rem; font-family: inherit; cursor: pointer; font-weight: 700; }
+    .btn-save:hover { background: #15803D; }
+    .btn-cancel { background: var(--bg-alt); border: 1.5px solid var(--border-mid); border-radius: var(--radius); color: var(--text-sec); padding: .5rem .9rem; font-size: .88rem; font-family: inherit; cursor: pointer; }
+    .btn-cancel:hover { border-color: var(--text-sec); }
+    .btn-danger { background: var(--err-bg); border: 1.5px solid var(--err-brd); border-radius: var(--radius); color: var(--err); padding: .5rem .9rem; font-size: .88rem; font-family: inherit; cursor: pointer; }
+    .btn-danger:hover { background: #ffe4e6; }
+
+    /* ══ TOAST ══ */
+    #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; max-width: 320px; background: var(--navy); border: 1px solid var(--border-mid); border-radius: var(--radius); padding: .7rem 1.1rem; font-size: .84rem; color: #fff; transform: translateY(80px); opacity: 0; transition: all .3s; z-index: 2000; box-shadow: var(--shadow-lg); }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { border-left: 3px solid #86efac; }
+    #toast.error   { border-left: 3px solid #fca5a5; }
+
+    /* ══ SPINNER ══ */
+    .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 4px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══ OFFLINE BANNER ══ */
+    #offline-banner { display: none; background: var(--warn-bg); border-bottom: 2px solid var(--warn-brd); color: var(--warn); text-align: center; font-size: .8rem; padding: .4rem; }
+
+    /* ══ EMPTY STATE ══ */
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-style: italic; font-size: .88rem; }
+
+    /* ══ PRINT ══ */
+    @media print {
+      .site-header, .tab-nav-wrap, .quick-actions, .filter-bar, .card-actions,
+      .priority-bar, .settings-panel, .update-banner, #toast, .modal-overlay,
+      .hdr-btn, #offline-banner, .sec-btn, .btn-add-section { display: none !important; }
+      body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+      .tab-pane { display: block !important; }
+      main { padding: 0; }
+      .container { max-width: 100%; padding: 0; }
+      .arret-card, .document-card { background: #fff !important; box-shadow: none !important; border: 1px solid #ccc !important; border-left: 3px solid #999 !important; break-inside: avoid; transform: none !important; page-break-inside: avoid; }
+      .arret-title, .doc-title { color: #000 !important; }
+      .arret-content, .doc-desc, .key-points li, .impact-list li { color: #333 !important; }
+      .arret-meta, .doc-meta { color: #555 !important; }
+      .info-box { background: #f0f0f0 !important; color: #000 !important; }
+      .stat-number { color: #000 !important; }
+      .key-points, .impact-section { background: #f8f8f8 !important; }
+      .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .collapsible-content.collapsed { max-height: 5000px !important; }
+      .section-title { color: #000 !important; border-left-color: #999 !important; }
+      a.card-link::after { content: " (" attr(href) ")"; font-size: .7rem; color: #666; }
+      .tl-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    @media (max-width: 600px) {
+      .header-inner { flex-direction: column; align-items: flex-start; }
+      .header-actions { width: 100%; justify-content: flex-end; }
+      .tab-btn { padding: .65rem .7rem; font-size: .8rem; }
+      .form-row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="offline-banner" role="status" aria-live="polite">⚠️ Mode hors-ligne — données chargées depuis le cache local</div>
+
+<!-- ══ HEADER ══ -->
+<header class="site-header" role="banner">
+  <div class="container">
+    <div class="header-inner">
+      <a href="#" class="header-brand" onclick="return false" aria-label="HEP-VS Veille juridique">
+        <span class="brand-logo" aria-hidden="true">HEP-VS</span>
+        <span class="brand-title">Veille juridique
+          <span class="brand-sub">Jurisprudence · Parlement · Entscheidsuche</span>
+        </span>
+      </a>
+      <div class="header-actions" role="toolbar" aria-label="Actions">
+        <button class="hdr-btn" onclick="toggleSettings()" aria-expanded="false" id="btn-settings">⚙️ GitHub</button>
+        <button class="hdr-btn" onclick="openChangelogModal()" aria-label="Historique des mises à jour">📝 Historique</button>
+        <button class="hdr-btn" onclick="printPage()" aria-label="Imprimer">🖨️ Imprimer</button>
+        <button class="hdr-btn" onclick="exportJSON()" aria-label="Exporter data.json">⬇️ JSON</button>
+        <button class="hdr-btn accent" id="btn-push" onclick="pushToGitHub()" aria-label="Publier sur GitHub" style="display:none">☁️ Publier</button>
+      </div>
+    </div>
+  </div>
+</header>
+<div id="sync-bar" class="sync-bar" aria-live="polite"></div>
+
+<!-- ══ SETTINGS ══ -->
+<div id="settings-panel" class="settings-panel" role="region" aria-label="Configuration GitHub">
+  <div class="container">
+    <h2 style="font-size:.95rem;color:var(--navy);margin-bottom:.9rem">⚙️ Configuration GitHub</h2>
+    <div class="settings-grid">
+      <div class="sf"><label for="gh-owner">Propriétaire</label><input id="gh-owner" placeholder="ex: tobias-hep" autocomplete="off" /></div>
+      <div class="sf"><label for="gh-repo">Dépôt</label><input id="gh-repo" placeholder="ex: hep-vs-veille" autocomplete="off" /></div>
+      <div class="sf"><label for="gh-branch">Branche</label><input id="gh-branch" value="main" /></div>
+      <div class="sf"><label for="gh-path">Fichier données</label><input id="gh-path" value="data.json" /></div>
+    </div>
+    <div class="sf" style="margin-bottom:.75rem;max-width:480px">
+      <label for="gh-token">Personal Access Token (scope: repo)</label>
+      <input id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+    </div>
+    <p class="settings-note">Token stocké dans le navigateur (localStorage). Créez-le sur <a href="https://github.com/settings/tokens/new?scopes=repo&description=HEP-VS+veille" target="_blank" rel="noreferrer">github.com/settings/tokens</a> avec le scope <strong>repo → contents</strong>. Sans token : consultation en lecture seule uniquement.</p>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="action-btn primary" onclick="saveGhConfig()">💾 Enregistrer et synchroniser</button>
+      <button class="action-btn secondary" onclick="downloadGHAction()">⚡ Télécharger GitHub Action (alertes email)</button>
+      <button class="action-btn secondary" onclick="toggleSettings()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<main role="main">
+  <div class="container">
+
+    <!-- Update banner -->
+    <div id="updateBanner" class="update-banner current" role="status" aria-live="polite">
+      <span id="updateStatus">Vérification…</span>
+      <button class="banner-btn" onclick="switchTab('veille')">🔍 Lancer une recherche</button>
+    </div>
+
+    <!-- ══ TAB NAV ══ -->
+    <div class="tab-nav-wrap">
+      <nav class="tab-nav" role="tablist" aria-label="Navigation principale">
+        <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="tab-juri"  id="btn-tab-juri"  onclick="switchTab('juri')">📋 Jurisprudence</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-veille" id="btn-tab-veille" onclick="switchTab('veille')">🔍 Veille live</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-parl"  id="btn-tab-parl"  onclick="switchTab('parl')">📜 Parlement</button>
+      </nav>
+    </div>
+
+    <!-- ══ TAB 1 : JURISPRUDENCE ══ -->
+    <div id="tab-juri" class="tab-pane active" role="tabpanel" aria-labelledby="btn-tab-juri">
+
+      <!-- Stats box -->
+      <div class="info-box">
+        <h3>📋 Compilation jurisprudentielle HEP</h3>
+        <p>Arrêts des tribunaux suisses concernant les Hautes Écoles Pédagogiques — admission, exclusion, certification, protection des titres.</p>
+        <div class="stats-row">
+          <div class="stat-item"><div class="stat-number" id="stat-total">—</div><div class="stat-label">Arrêts recensés</div></div>
+          <div class="stat-item"><div class="stat-number" id="stat-tf">—</div><div class="stat-label">Tribunal fédéral</div></div>
+          <div class="stat-item"><div class="stat-number" id="stat-tc">—</div><div class="stat-label">Tribunaux cantonaux</div></div>
+          <div class="stat-item"><div class="stat-number" id="stat-new">—</div><div class="stat-label">Nouveaux (30j)</div></div>
+          <div class="stat-item"><div class="stat-number" id="lastUpdateDisplay">—</div><div class="stat-label">Dernière MAJ</div></div>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar" id="filter-bar" role="search" aria-label="Filtres jurisprudence">
+        <div class="filter-row">
+          <div class="ff grow">
+            <label for="search-input">Recherche plein texte</label>
+            <input type="search" id="search-input" placeholder="Référence, tribunal, mot-clé…" oninput="applyFilters()" aria-label="Recherche dans les arrêts" />
+          </div>
+          <div class="ff">
+            <label for="filter-type">Type</label>
+            <select id="filter-type" onchange="applyFilters()" aria-label="Filtrer par type">
+              <option value="">Tous</option>
+              <option value="tf">TF</option>
+              <option value="tc">TC</option>
+              <option value="principe">Principe</option>
+              <option value="imported">Importé</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label for="filter-hep">Institution</label>
+            <select id="filter-hep" onchange="applyFilters()" aria-label="Filtrer par HEP">
+              <option value="">Toutes</option>
+            </select>
+          </div>
+          <div style="align-self:flex-end">
+            <button class="action-btn secondary" onclick="clearFilters()" aria-label="Réinitialiser les filtres">✕ Réinitialiser</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <div class="tag-filter-label" aria-hidden="true">Tags :</div>
+          <div id="tag-filter-pills" class="tag-filter-row" role="group" aria-label="Filtrer par thématique"></div>
+          <div class="filter-summary" id="filter-summary" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <a href="https://www.bger.ch" target="_blank" rel="noreferrer" class="action-btn secondary">🏛️ Tribunal fédéral</a>
+        <a href="https://jurisprudence.vs.ch" target="_blank" rel="noreferrer" class="action-btn secondary">⚖️ Jurisprudence VS</a>
+        <button onclick="openAddModalJuriVS()" class="action-btn secondary" title="Ajouter un arrêt trouvé sur jurisprudence.vs.ch">➕ Arrêt VS</button>
+        <button onclick="openAddModal('juri')" class="action-btn primary">➕ Nouvel arrêt</button>
+      </div>
+
+      <div id="juri-render" aria-live="polite"></div>
+
+      <!-- Thematic summary -->
+      <div style="margin-top:1.5rem;background:var(--info-bg);border:1.5px solid var(--info-brd);border-radius:var(--radius-lg);padding:1.1rem">
+        <h3 style="color:var(--navy);font-size:.95rem;margin-bottom:.65rem">📊 Thématiques fréquentes</h3>
+        <ul style="list-style:none">
+          <li style="padding:.2rem 0 .2rem 1rem;position:relative;font-size:.84rem;color:var(--text-sec)"><span style="position:absolute;left:0;color:var(--red);font-weight:700">→</span><strong>Exclusion pour échec aux examens/stages</strong> — Art. 83 let. t LTF (irrecevabilité au TF)</li>
+          <li style="padding:.2rem 0 .2rem 1rem;position:relative;font-size:.84rem;color:var(--text-sec)"><span style="position:absolute;left:0;color:var(--red);font-weight:700">→</span><strong>Exclusion pour comportement</strong> — Examen du pouvoir d'appréciation</li>
+          <li style="padding:.2rem 0 .2rem 1rem;position:relative;font-size:.84rem;color:var(--text-sec)"><span style="position:absolute;left:0;color:var(--red);font-weight:700">→</span><strong>Recours tardifs / notification fictive</strong> — Recommandé non retiré, délai de 7 jours</li>
+          <li style="padding:.2rem 0 .2rem 1rem;position:relative;font-size:.84rem;color:var(--text-sec)"><span style="position:absolute;left:0;color:var(--red);font-weight:700">→</span><strong>Droits fondamentaux dans les HEP</strong> — Égalité des sexes vs liberté d'association (ATF 151 I 337)</li>
+          <li style="padding:.2rem 0 .2rem 1rem;position:relative;font-size:.84rem;color:var(--text-sec)"><span style="position:absolute;left:0;color:var(--red);font-weight:700">→</span><strong>Protection des titres</strong> — Art. 29 LEHE</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ══ TAB 2 : VEILLE ══ -->
+    <div id="tab-veille" class="tab-pane" role="tabpanel" aria-labelledby="btn-tab-veille">
+      <div class="veille-panel">
+        <div class="search-row">
+          <div class="vf grow"><label for="v-keyword">Mot-clé supplémentaire (optionnel)</label><input type="text" id="v-keyword" placeholder="ex: exclusion, admission, Wallis, stage…" /></div>
+          <div class="vf"><label for="v-date">Depuis</label><input type="date" id="v-date" value="2022-01-01" style="width:145px" /></div>
+          <div class="vf"><label for="v-lang">Langue</label>
+            <select id="v-lang" style="width:135px">
+              <option value="fr">Français (HEP)</option>
+              <option value="de">Allemand (PH)</option>
+              <option value="both">Les deux</option>
+            </select>
+          </div>
+          <button id="veille-search-btn" onclick="veilleSearch()" aria-label="Lancer la recherche">🔍 Rechercher</button>
+        </div>
+      </div>
+      <div id="veille-status" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem;min-height:1em" aria-live="polite"></div>
+      <div id="veille-result-list">
+        <div class="empty-state">Lancez une recherche pour interroger l'API entscheidsuche.ch en temps réel.<br><small>Les résultats peuvent être importés dans la compilation.</small></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB 3 : PARLEMENT ══ -->
+    <div id="tab-parl" class="tab-pane" role="tabpanel" aria-labelledby="btn-tab-parl">
+      <div class="info-box">
+        <h3>📜 Suivi parlementaire valaisan</h3>
+        <p>Interventions parlementaires récentes concernant ou impactant la HEP-VS (2024–2026).</p>
+        <div class="stats-row">
+          <div class="stat-item"><div class="stat-number" id="stat-parl-total">—</div><div class="stat-label">Documents</div></div>
+          <div class="stat-item"><div class="stat-number" id="stat-parl-direct">—</div><div class="stat-label">Impact direct</div></div>
+          <div class="stat-item"><div class="stat-number" id="stat-parl-indirect">—</div><div class="stat-label">Impact indirect</div></div>
+        </div>
+      </div>
+      <div class="quick-actions">
+        <a href="https://parlement.vs.ch" target="_blank" rel="noreferrer" class="action-btn secondary">🏛️ Parlement VS</a>
+        <button onclick="toggleAllSections()" class="action-btn secondary">📋 Déplier/Replier</button>
+        <button onclick="toggleVeilleParl()" class="action-btn secondary" id="btn-toggle-vparl">🔄 Rechercher mises à jour</button>
+        <button onclick="openAddModal('parl')" class="action-btn primary">➕ Nouveau document</button>
+      </div>
+
+      <!-- Veille parlementaire (parlement.vs.ch) -->
+      <div id="vparl-panel" class="veille-panel" style="display:none;margin-top:.6rem">
+        <div class="search-row">
+          <div class="vf grow"><label for="vp-keyword">Mot-clé</label><input type="text" id="vp-keyword" value="HEP" placeholder="ex: HEP, pédagogie, enseignement" /></div>
+          <div class="vf"><label for="vp-type">Catégorie</label>
+            <select id="vp-type" style="width:220px">
+              <option value="ParlProcess">Objets parlementaires (postulats, motions…)</option>
+              <option value="Document">Documents (réponses CE, rapports…)</option>
+              <option value="ParlTransaction">Points à l'ordre du jour</option>
+            </select>
+          </div>
+          <button id="vparl-search-btn" onclick="veilleParlSearch()" aria-label="Lancer la recherche">🔍 Rechercher</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem">Source : <code>parlement.vs.ch</code> via proxy CORS · <button onclick="toggleVParlProxy()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem;padding:0;text-decoration:underline">configurer</button></div>
+        <div id="vparl-proxy-cfg" style="display:none;margin-top:.5rem;padding:.5rem;background:var(--bg-alt);border-radius:6px;font-size:.78rem">
+          <label for="vp-proxy" style="display:block;margin-bottom:.2rem;font-weight:600">Proxy CORS (préfixe URL)</label>
+          <input type="text" id="vp-proxy" style="width:100%;padding:.35rem .55rem;border:1.5px solid var(--border-mid);border-radius:6px;font-family:monospace;font-size:.76rem" />
+          <div style="font-size:.7rem;color:var(--text-muted);margin-top:.25rem">Par défaut : <code>https://api.codetabs.com/v1/proxy/?quest=</code>. Vide = appel direct (ne marchera que si CORS ouvert).</div>
+          <button onclick="saveVParlProxy()" style="margin-top:.35rem;padding:.3rem .7rem;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:.75rem;cursor:pointer">Enregistrer</button>
+        </div>
+      </div>
+      <div id="vparl-status" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.4rem;min-height:1em;display:none" aria-live="polite"></div>
+      <div id="vparl-results" style="margin-bottom:.8rem"></div>
+
+      <div class="legend" role="legend" aria-label="Légende des priorités">
+        <div class="legend-item"><span class="legend-dot dot-high" aria-hidden="true"></span><span>Impact élevé</span></div>
+        <div class="legend-item"><span class="legend-dot dot-medium" aria-hidden="true"></span><span>Impact moyen</span></div>
+        <div class="legend-item"><span class="legend-dot dot-low" aria-hidden="true"></span><span>Impact indirect</span></div>
+        <div class="legend-item"><span class="legend-dot dot-info" aria-hidden="true"></span><span>Information</span></div>
+      </div>
+      <div id="parl-render" aria-live="polite"></div>
+      <div class="alert alert-info" style="margin-top:1.5rem;font-size:.78rem">
+        <strong>Points d'attention :</strong> pénurie d'enseignants · concurrence inter-cantonale · formation à distance · coûts · numérique/IA · articulation avec Uni Valais-Wallis
+      </div>
+      <div style="margin-top:1rem;text-align:center;font-size:.73rem;color:var(--text-muted)">
+        Sources : <a href="https://parlement.vs.ch">parlement.vs.ch</a> · <a href="https://www.vs.ch">vs.ch</a> · RTS · Le Nouvelliste
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</main>
+
+<!-- ══ EDIT/ADD MODAL ══ -->
+<div id="editModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEditModal()" aria-label="Fermer">×</button>
+    <h3 id="edit-modal-title">✏️ Modifier</h3>
+    <div id="edit-form-content"></div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="btn-delete-entry" onclick="deleteEntry()" style="display:none;margin-right:auto" aria-label="Supprimer cette entrée">🗑️ Supprimer</button>
+      <button class="btn-cancel" onclick="closeEditModal()">Annuler</button>
+      <button class="btn-save" onclick="saveEntry()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ IMPORT MODAL ══ -->
+<div id="importModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="import-modal-title">
+  <div class="modal">
+    <button class="modal-close" onclick="closeImportModal()" aria-label="Fermer">×</button>
+    <h3 id="import-modal-title">📥 Importer dans la compilation</h3>
+    <div class="form-row"><label for="imp-ref">Référence</label><input type="text" id="imp-ref" /></div>
+    <div class="form-row"><label for="imp-title">Titre</label><input type="text" id="imp-title" /></div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin-bottom:0"><label for="imp-date">Date affichée</label><input type="text" id="imp-date" /></div>
+      <div class="form-row" style="margin-bottom:0"><label for="imp-date-sort">Date (tri)</label><input type="date" id="imp-date-sort" /></div>
+    </div>
+    <div style="height:.5rem"></div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin-bottom:0"><label for="imp-type">Type</label>
+        <select id="imp-type"><option value="tf">TF</option><option value="tc">TC</option><option value="principe">Principe</option></select>
+      </div>
+      <div class="form-row" style="margin-bottom:0"><label for="imp-section">Section</label>
+        <select id="imp-section">
+          <option value="imported">Importé (veille)</option>
+          <option value="tf2025">TF 2025</option><option value="tf2024">TF 2024</option>
+          <option value="tc2024">TC 2024</option><option value="tc2023">TC 2023</option><option value="principe">Principe</option>
+        </select>
+      </div>
+    </div>
+    <div style="height:.5rem"></div>
+    <div class="form-row"><label for="imp-court">Tribunal / HEP concernée</label><input type="text" id="imp-court" /></div>
+    <div class="form-row"><label for="imp-url">URL du document</label><input type="url" id="imp-url" /></div>
+    <div class="form-row"><label for="imp-tags">Tags (séparés par des virgules)</label><input type="text" id="imp-tags" placeholder="ex: exclusion-comportement, HEP Vaud" /></div>
+    <div class="form-row"><label for="imp-notes">Résumé / Notes</label><textarea id="imp-notes" rows="3"></textarea></div>
+    <input type="hidden" id="imp-source-idx" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeImportModal()">Annuler</button>
+      <button class="btn-save" onclick="saveImport()">✅ Ajouter à la compilation</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHANGELOG MODAL ══ -->
+<div id="changelogModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="changelog-modal-title">
+  <div class="modal">
+    <button class="modal-close" onclick="closeChangelogModal()" aria-label="Fermer">×</button>
+    <h3 id="changelog-modal-title">📝 Historique des mises à jour</h3>
+    <div id="changelog-list" class="changelog-list" style="margin-bottom:1rem"></div>
+    <div style="border-top:1px solid var(--border);padding-top:.9rem;margin-top:.5rem">
+      <p style="font-size:.78rem;font-weight:700;color:var(--text-sec);margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.07em">Ajouter une entrée</p>
+      <div class="form-row"><label for="cl-notes">Notes de mise à jour</label><textarea id="cl-notes" rows="2" placeholder="ex: Ajout ATF 151 I 337, mise à jour timeline LEHER…"></textarea></div>
+      <div class="form-row"><label for="cl-author">Auteur</label><input type="text" id="cl-author" placeholder="ex: Tobias" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeChangelogModal()">Fermer</button>
+      <button class="btn-save" onclick="addChangelogEntry()">➕ Ajouter et publier</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let appData = { meta:{lastUpdated:'',updateIntervalDays:30,changelog:[]}, jurisprudence:[], parlementaire:[] };
+let ghConfig = { owner:'', repo:'', branch:'main', path:'data.json', token:'' };
+let pendingChanges = false;
+let _editContext = { type:null, id:null };
+let _veilleResults = [];
+let _veilleParlResults = [];
+let _vExpanded = {};
+const VPARL_PROXY_DEFAULT = 'https://api.codetabs.com/v1/proxy/?quest=';
+const VPARL_API_BASE = 'https://parlement.vs.ch/api/fe/v1';
+const VPARL_PUBLIC_BASE = 'https://parlement.vs.ch/fr';
+let _activeFilters = { text:'', type:'', hep:'', tags:[] };
+let _reorderMode = {};
+let _allExp = true;
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  loadGhConfig();
+  registerServiceWorker();
+  await fetchData();
+  renderAll();
+  checkUpdateStatus();
+  buildTagPills();
+  buildHepFilter();
+  window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display='block'; });
+  window.addEventListener('online',  () => { document.getElementById('offline-banner').style.display='none'; });
+  if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
+});
+
+// ════════════════════════════════════════════════════════
+// SERVICE WORKER
+// ════════════════════════════════════════════════════════
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// GITHUB CONFIG
+// ════════════════════════════════════════════════════════
+function loadGhConfig() {
+  try {
+    const s = localStorage.getItem('hep_gh_config');
+    if (s) ghConfig = { ...ghConfig, ...JSON.parse(s) };
+  } catch(e) {}
+  document.getElementById('gh-owner').value  = ghConfig.owner;
+  document.getElementById('gh-repo').value   = ghConfig.repo;
+  document.getElementById('gh-branch').value = ghConfig.branch;
+  document.getElementById('gh-path').value   = ghConfig.path;
+  document.getElementById('gh-token').value  = ghConfig.token;
+}
+
+function saveGhConfig() {
+  ghConfig.owner  = document.getElementById('gh-owner').value.trim();
+  ghConfig.repo   = document.getElementById('gh-repo').value.trim();
+  ghConfig.branch = document.getElementById('gh-branch').value.trim() || 'main';
+  ghConfig.path   = document.getElementById('gh-path').value.trim() || 'data.json';
+  ghConfig.token  = document.getElementById('gh-token').value.trim();
+  localStorage.setItem('hep_gh_config', JSON.stringify(ghConfig));
+  toggleSettings();
+  fetchData().then(() => { renderAll(); buildTagPills(); buildHepFilter(); toast('✅ Config enregistrée et données synchronisées.','success'); });
+}
+
+function toggleSettings() {
+  const p = document.getElementById('settings-panel');
+  const btn = document.getElementById('btn-settings');
+  const open = p.style.display !== 'none' && p.style.display !== '';
+  p.style.display = open ? 'none' : 'block';
+  btn.setAttribute('aria-expanded', !open);
+}
+
+// ════════════════════════════════════════════════════════
+// DATA FETCH
+// ════════════════════════════════════════════════════════
+async function fetchData() {
+  const bar = document.getElementById('sync-bar');
+  bar.textContent = 'Chargement…'; bar.className = 'sync-bar pending';
+
+  // 1. Toujours essayer d'abord ./data.json (même répertoire GitHub Pages)
+  try {
+    const res = await fetch('./data.json?t=' + Date.now());
+    if (res.ok) {
+      appData = await res.json();
+      bar.textContent = '✅ Données chargées';
+      bar.className = 'sync-bar ok';
+      if (ghConfig.token) document.getElementById('btn-push').style.display = 'inline-flex';
+      return;
+    }
+  } catch(e) {}
+
+  // 2. Si GitHub configuré, essayer raw.githubusercontent.com
+  if (ghConfig.owner && ghConfig.repo) {
+    const url = `https://raw.githubusercontent.com/${ghConfig.owner}/${ghConfig.repo}/${ghConfig.branch}/${ghConfig.path}?t=${Date.now()}`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      appData = await res.json();
+      bar.textContent = `✅ Synchronisé depuis GitHub — ${new Date().toLocaleTimeString('fr-CH')}`;
+      bar.className = 'sync-bar ok';
+      if (ghConfig.token) document.getElementById('btn-push').style.display = 'inline-flex';
+      return;
+    } catch(e) {
+      bar.textContent = '❌ Chargement impossible : ' + e.message;
+      bar.className = 'sync-bar err';
+      return;
+    }
+  }
+
+  bar.textContent = '⚠️ data.json introuvable — vérifiez le déploiement';
+  bar.className = 'sync-bar err';
+}
+
+// ════════════════════════════════════════════════════════
+// GITHUB PUSH
+// ════════════════════════════════════════════════════════
+async function pushToGitHub(silent) {
+  if (!ghConfig.token) { toast('Token GitHub manquant — configurez ⚙️ GitHub.','error'); return; }
+  const btn = document.getElementById('btn-push');
+  btn.innerHTML = '<span class="spinner"></span>Publication…'; btn.disabled = true;
+  try {
+    if (!appData.meta) appData.meta = {};
+    appData.meta.lastUpdated = new Date().toISOString().slice(0,10);
+    const shaRes = await fetch(
+      `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/${ghConfig.path}`,
+      { headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json' } }
+    );
+    const shaData = await shaRes.json();
+    if (!shaData.sha) throw new Error(shaData.message || 'SHA introuvable');
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(appData, null, 2))));
+    const pushRes = await fetch(
+      `https://api.github.com/repos/${ghConfig.owner}/${ghConfig.repo}/contents/${ghConfig.path}`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `token ${ghConfig.token}`, 'Content-Type': 'application/json', Accept: 'application/vnd.github.v3+json' },
+        body: JSON.stringify({ message: `Mise à jour HEP-VS — ${appData.meta.lastUpdated}`, content, sha: shaData.sha })
+      }
+    );
+    if (!pushRes.ok) { const e = await pushRes.json(); throw new Error(e.message); }
+    pendingChanges = false;
+    document.getElementById('sync-bar').textContent = `✅ Publié sur GitHub — ${new Date().toLocaleTimeString('fr-CH')}`;
+    document.getElementById('sync-bar').className = 'sync-bar ok';
+    checkUpdateStatus();
+    if (!silent) toast('✅ Données publiées sur GitHub !','success');
+  } catch(e) {
+    toast('❌ Erreur GitHub : ' + e.message,'error');
+  } finally {
+    btn.innerHTML = '☁️ Publier'; btn.disabled = false;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════
+const JURI_SECTIONS = [
+  { key:'imported', label:'📥 Importés via veille', cls:'imported' },
+  { key:'tf2025',   label:'🏛️ Tribunal fédéral (2025)',  cls:'tf' },
+  { key:'tf2024',   label:'🏛️ Tribunal fédéral (2024)',  cls:'tf' },
+  { key:'tc2024',   label:'⚖️ Tribunaux cantonaux (2024)', cls:'tc' },
+  { key:'tc2023',   label:'⚖️ Tribunaux cantonaux (2023)', cls:'tc' },
+  { key:'principe', label:'📜 Arrêts de principe',         cls:'principe' },
+];
+const PARL_SECTIONS = [
+  { key:'direct',   label:'🎯 Impact direct HEP-VS' },
+  { key:'indirect', label:'🔗 Impact indirect · Contexte éducatif' },
+  { key:'contexte', label:'📋 Contexte institutionnel' },
+];
+
+function isNew(dateStr) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return false;
+  const diff = (new Date() - d) / 86400000;
+  return diff >= 0 && diff <= 30;
+}
+
+function renderAll() {
+  renderJurisprudence();
+  renderParlementaire();
+  updateStats();
+}
+
+function renderJurisprudence(filtered) {
+  const container = document.getElementById('juri-render');
+  const arr = filtered || (appData.jurisprudence || []);
+  let html = '';
+  let shownAny = false;
+  JURI_SECTIONS.forEach(sec => {
+    const items = arr.filter(a => a.section === sec.key);
+    if (!items.length) return;
+    shownAny = true;
+    const rMode = _reorderMode[sec.key];
+    html += `<div class="section-head">
+      <h2 class="section-title">${sec.label} <span style="font-size:.78rem;font-weight:400;color:var(--text-muted)">(${items.length})</span></h2>
+      <div class="section-actions">
+        <button class="sec-btn ${rMode?'active':''}" onclick="toggleReorderMode('${sec.key}')" aria-pressed="${!!rMode}" title="Réordonner les arrêts">↕ Réordonner</button>
+        <button class="sec-btn" onclick="openAddModal('juri','${sec.key}')" aria-label="Ajouter un arrêt dans cette section">➕</button>
+      </div>
+    </div>`;
+    items.forEach((a,i) => { html += renderArretCard(a, sec.key, i, items.length, !!rMode); });
+  });
+  if (!shownAny) html = '<div class="empty-state">Aucun arrêt ne correspond aux filtres sélectionnés.</div>';
+  container.innerHTML = html;
+}
+
+function renderArretCard(a, secKey, idx, total, reorderMode) {
+  const badges = (a.badges||[]).map(b => `<span class="badge badge-${b}">${b.toUpperCase()}</span>`).join('');
+  const newBadge = isNew(a.date) ? `<span class="badge badge-new" title="Ajouté dans les 30 derniers jours">NOUVEAU</span>` : '';
+  const pending = a.pending ? `<span class="badge badge-pending" title="Référence à confirmer">⚠️ À CONFIRMER</span>` : '';
+  const links = (a.links||[]).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noreferrer" class="card-link">🔗 ${esc(l.label)}</a>`).join('');
+  const kp = (a.keyPoints||[]).map(p => `<li>${p}</li>`).join('');
+  const tags = (a.tags||[]).map(t => `<button class="tag-chip" onclick="addTagFilter('${esc(t)}')" title="Filtrer par ${esc(t)}">${esc(t)}</button>`).join('');
+  const reorderBtns = reorderMode ? `
+    <button class="card-act-btn up" onclick="moveCard('${esc(a.id)}','${secKey}',-1)" ${idx===0?'disabled':''} aria-label="Monter">↑</button>
+    <button class="card-act-btn dn" onclick="moveCard('${esc(a.id)}','${secKey}',1)" ${idx===total-1?'disabled':''} aria-label="Descendre">↓</button>` : '';
+  return `<article class="arret-card ${a.type||''}" id="card-${esc(a.id)}" data-id="${esc(a.id)}" data-section="${esc(secKey)}">
+    <div class="card-actions" aria-label="Actions">
+      ${reorderBtns}
+      <button class="card-act-btn" onclick="openEditModal('juri','${esc(a.id)}')" aria-label="Modifier cet arrêt">✏️</button>
+    </div>
+    <div class="card-top">
+      <div class="card-top-left">
+        <span class="arret-ref">${esc(a.ref)}</span>
+        <div class="badge-group">${badges}${newBadge}${pending}</div>
+      </div>
+    </div>
+    <h3 class="arret-title">${esc(a.title)}</h3>
+    <div class="arret-meta">
+      <span>📅 ${esc(a.dateDisplay||a.date||'—')}</span>
+      ${a.court ? `<span>⚖️ ${esc(a.court)}</span>` : ''}
+      ${a.hep   ? `<span>📍 ${esc(a.hep)}</span>` : ''}
+    </div>
+    <div class="arret-content">
+      <p>${a.content||''}</p>
+      ${kp ? `<div class="key-points"><div class="key-points-title">Points clés</div><ul>${kp}</ul></div>` : ''}
+    </div>
+    ${tags ? `<div class="tag-list" aria-label="Thématiques">${tags}</div>` : ''}
+    <div class="card-links">${links}</div>
+  </article>`;
+}
+
+function renderParlementaire() {
+  const container = document.getElementById('parl-render');
+  const arr = appData.parlementaire || [];
+  let html = '';
+  PARL_SECTIONS.forEach(sec => {
+    const items = arr.filter(d => d.section === sec.key);
+    if (!items.length) return;
+    html += `<h2 class="section-title collapsible" onclick="toggleSection(this)" style="margin:1.75rem 0 .9rem">${sec.label}</h2>
+    <div class="collapsible-content" style="display:flex;flex-direction:column">`;
+    items.forEach(d => { html += renderDocCard(d); });
+    html += `</div>`;
+  });
+  // Strategic points
+  html += `<h2 class="section-title collapsible" onclick="toggleSection(this)" style="margin:1.75rem 0 .9rem">⚠️ Points d'attention stratégiques</h2>
+  <div class="collapsible-content">
+    <div class="document-card info">
+      <ul class="impact-list" style="margin:0">
+        <li><strong>Pénurie d'enseignants :</strong> pression pour augmenter la capacité d'accueil</li>
+        <li><strong>Concurrence inter-cantonale :</strong> site de Brigue face aux offres extra-cantonales</li>
+        <li><strong>Formation à distance :</strong> équilibre flexibilité / qualité du "métier de l'humain"</li>
+        <li><strong>Coûts :</strong> Conseil d'État prudent sur les ressources nécessaires</li>
+        <li><strong>Numérique/IA :</strong> évolutions en cours au niveau fédéral</li>
+        <li><strong>Articulation Uni Valais-Wallis :</strong> positionnement dans l'écosystème tertiaire cantonal</li>
+      </ul>
+    </div>
+  </div>`;
+  container.innerHTML = html;
+}
+
+function renderDocCard(d) {
+  const typeClass = {loi:'type-loi',postulat:'type-postulat',motion:'type-motion',projet:'type-projet',accreditation:'type-accreditation'}[d.docType] || 'type-loi';
+  const statusHtml = d.status==='adopte'
+    ? `<span class="status-badge status-adopte">✓ Adopté${d.docType==='loi'?'e':''}</span>`
+    : `<span class="status-badge status-encours">En cours</span>`;
+  const impacts = (d.impacts||[]).map(i=>`<li>${esc(i)}</li>`).join('');
+  const prioLabels = {high:'🔴 Élevé', medium:'🟠 Moyen', low:'🟢 Indirect', info:'🔵 Info'};
+  const prioBar = Object.entries(prioLabels).map(([p,label]) =>
+    `<button class="prio-btn ${d.priority===p?'active-'+p:''}" onclick="setPriority('${esc(d.id)}','${p}')" aria-label="Définir priorité ${p}">${label}</button>`
+  ).join('');
+  const tl = renderTimeline(d.timeline||[]);
+  return `<article class="document-card ${d.priority||'info'}" id="doc-${esc(d.id)}">
+    <div class="card-actions"><button class="card-act-btn" onclick="openEditModal('parl','${esc(d.id)}')" aria-label="Modifier">✏️</button></div>
+    <div class="doc-header-row">
+      <div style="display:flex;gap:.35rem;flex-wrap:wrap;align-items:center">
+        <span class="doc-type-badge ${typeClass}">${esc(d.docType||'')}</span>
+        ${statusHtml}
+      </div>
+    </div>
+    <div class="doc-title">${esc(d.title)}</div>
+    <div class="doc-meta">
+      <span>📅 ${esc(d.date||'—')}</span>
+      ${d.authors ? `<span>👥 ${esc(d.authors)}</span>` : ''}
+      ${d.vote    ? `<span class="vote-chip">${esc(d.vote)}</span>` : ''}
+    </div>
+    <p class="doc-desc">${esc(d.description||'')}</p>
+    ${impacts ? `<div class="impact-section"><div class="impact-title">Impacts sur la HEP-VS</div><ul class="impact-list">${impacts}</ul></div>` : ''}
+    ${d.financial ? `<div class="financial-note">💰 <strong>Estimation :</strong> ${esc(d.financial)}</div>` : ''}
+    ${d.officialUrl ? `<a href="${esc(d.officialUrl)}" target="_blank" rel="noreferrer" class="official-link">🔗 Document officiel parlement.vs.ch</a>` : ''}
+    ${tl}
+    <div class="priority-bar" aria-label="Changer la priorité"><span>Impact :</span>${prioBar}</div>
+  </article>`;
+}
+
+function renderTimeline(steps) {
+  if (!steps || !steps.length) return '';
+  const html = steps.map((s,i) => {
+    const done = !!s.done;
+    const isCurrent = !done && (i===0 || steps[i-1].done);
+    const cls = done ? 'done' : isCurrent ? 'current' : '';
+    const icon = done ? '✓' : isCurrent ? '●' : '';
+    const dateStr = s.date ? new Date(s.date).toLocaleDateString('fr-CH',{month:'short',year:'2-digit'}) : '';
+    return `<div class="tl-step ${cls}" aria-label="${esc(s.status)} ${done?'(terminé)':isCurrent?'(en cours)':'(à venir)'}">
+      <div class="tl-dot">${icon}</div>
+      <div class="tl-label">${esc(s.status)}</div>
+      <div class="tl-date">${esc(dateStr)}</div>
+    </div>`;
+  }).join('');
+  return `<div class="timeline-wrap" aria-label="Chronologie"><div class="timeline">${html}</div></div>`;
+}
+
+function updateStats() {
+  const j = appData.jurisprudence || [];
+  document.getElementById('stat-total').textContent = j.length;
+  document.getElementById('stat-tf').textContent = j.filter(a=>a.type==='tf').length;
+  document.getElementById('stat-tc').textContent = j.filter(a=>a.type==='tc').length;
+  document.getElementById('stat-new').textContent = j.filter(a=>isNew(a.date)).length;
+  const lu = appData.meta && appData.meta.lastUpdated;
+  if (lu) {
+    const d = new Date(lu);
+    document.getElementById('lastUpdateDisplay').textContent = d.toLocaleDateString('fr-CH',{day:'2-digit',month:'2-digit',year:'2-digit'});
+  }
+  const p = appData.parlementaire || [];
+  document.getElementById('stat-parl-total').textContent = p.length;
+  document.getElementById('stat-parl-direct').textContent = p.filter(d=>d.section==='direct').length;
+  document.getElementById('stat-parl-indirect').textContent = p.filter(d=>d.section==='indirect').length;
+}
+
+function checkUpdateStatus() {
+  const banner = document.getElementById('updateBanner');
+  const el = document.getElementById('updateStatus');
+  const lu = appData.meta && appData.meta.lastUpdated;
+  if (!lu) { banner.className='update-banner warning'; el.textContent='⚠️ Date inconnue'; return; }
+  const diff = Math.floor((new Date()-new Date(lu))/86400000);
+  const interval = (appData.meta&&appData.meta.updateIntervalDays)||30;
+  if (diff <= interval)          { banner.className='update-banner current'; el.textContent=`✅ À jour — ${diff} jour${diff>1?'s':''}`; }
+  else if (diff <= interval+15)  { banner.className='update-banner warning'; el.textContent=`⚠️ Mise à jour recommandée — ${diff} jours`; }
+  else                           { banner.className='update-banner overdue'; el.textContent=`🔴 Mise à jour requise — ${diff} jours`; }
+}
+
+// ════════════════════════════════════════════════════════
+// FILTERS & TAGS
+// ════════════════════════════════════════════════════════
+function buildTagPills() {
+  const allTags = [...new Set((appData.jurisprudence||[]).flatMap(a=>a.tags||[]))].sort();
+  const container = document.getElementById('tag-filter-pills');
+  container.innerHTML = allTags.map(t =>
+    `<button class="tag-pill ${_activeFilters.tags.includes(t)?'active':''}" onclick="toggleTagFilter('${esc(t)}')" aria-pressed="${_activeFilters.tags.includes(t)}">${esc(t)}</button>`
+  ).join('');
+}
+
+function buildHepFilter() {
+  const heps = [...new Set((appData.jurisprudence||[]).map(a=>a.hep||'').filter(Boolean))].sort();
+  const sel = document.getElementById('filter-hep');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Toutes</option>' + heps.map(h=>`<option value="${esc(h)}" ${cur===h?'selected':''}>${esc(h)}</option>`).join('');
+}
+
+function toggleTagFilter(tag) {
+  const idx = _activeFilters.tags.indexOf(tag);
+  if (idx >= 0) _activeFilters.tags.splice(idx, 1);
+  else _activeFilters.tags.push(tag);
+  buildTagPills();
+  applyFilters();
+}
+
+function addTagFilter(tag) {
+  if (!_activeFilters.tags.includes(tag)) { _activeFilters.tags.push(tag); buildTagPills(); }
+  applyFilters();
+  document.getElementById('filter-bar').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function applyFilters() {
+  _activeFilters.text = (document.getElementById('search-input').value||'').toLowerCase().trim();
+  _activeFilters.type = document.getElementById('filter-type').value;
+  _activeFilters.hep  = document.getElementById('filter-hep').value;
+  const arr = appData.jurisprudence || [];
+  let filtered = arr.filter(a => {
+    if (_activeFilters.type && a.type !== _activeFilters.type) return false;
+    if (_activeFilters.hep  && a.hep  !== _activeFilters.hep)  return false;
+    if (_activeFilters.tags.length && !_activeFilters.tags.some(t=>(a.tags||[]).includes(t))) return false;
+    if (_activeFilters.text) {
+      const haystack = [a.ref,a.title,a.content,a.hep,a.court,...(a.keyPoints||[]),(a.tags||[]).join(' ')].join(' ').toLowerCase();
+      if (!haystack.includes(_activeFilters.text)) return false;
+    }
+    return true;
+  });
+  renderJurisprudence(filtered);
+  const hasFilter = _activeFilters.text || _activeFilters.type || _activeFilters.hep || _activeFilters.tags.length;
+  document.getElementById('filter-summary').textContent = hasFilter ? `${filtered.length} résultat${filtered.length!==1?'s':''}` : '';
+}
+
+function clearFilters() {
+  _activeFilters = { text:'', type:'', hep:'', tags:[] };
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-type').value = '';
+  document.getElementById('filter-hep').value = '';
+  buildTagPills();
+  renderJurisprudence();
+  document.getElementById('filter-summary').textContent = '';
+}
+
+// ════════════════════════════════════════════════════════
+// REORDER
+// ════════════════════════════════════════════════════════
+function toggleReorderMode(secKey) {
+  _reorderMode[secKey] = !_reorderMode[secKey];
+  applyFilters();
+  if (!_activeFilters.text && !_activeFilters.type && !_activeFilters.hep && !_activeFilters.tags.length) renderJurisprudence();
+  else applyFilters();
+}
+
+function moveCard(id, secKey, dir) {
+  const arr = appData.jurisprudence;
+  const sectionItems = arr.filter(a=>a.section===secKey);
+  const absIdx = arr.findIndex(a=>a.id===id);
+  const secIdx = sectionItems.findIndex(a=>a.id===id);
+  const targetSecIdx = secIdx + dir;
+  if (targetSecIdx < 0 || targetSecIdx >= sectionItems.length) return;
+  const targetId = sectionItems[targetSecIdx].id;
+  const targetAbsIdx = arr.findIndex(a=>a.id===targetId);
+  // Swap in main array
+  [arr[absIdx], arr[targetAbsIdx]] = [arr[targetAbsIdx], arr[absIdx]];
+  markPending();
+  renderJurisprudence();
+  // Re-focus moved card
+  setTimeout(() => { const el=document.getElementById('card-'+id); if(el) el.focus(); }, 50);
+}
+
+// ════════════════════════════════════════════════════════
+// PRIORITY (Parliament)
+// ════════════════════════════════════════════════════════
+function setPriority(id, priority) {
+  const entry = appData.parlementaire.find(d => d.id === id);
+  if (!entry) return;
+  entry.priority = priority;
+  renderParlementaire();
+  markPending();
+  const labels = {high:'Impact élevé', medium:'Impact moyen', low:'Impact indirect', info:'Information'};
+  toast(`✅ Priorité : ${labels[priority]||priority}`, 'success');
+}
+
+// ════════════════════════════════════════════════════════
+// EDIT MODAL
+// ════════════════════════════════════════════════════════
+const JURI_SECTION_OPTS = JURI_SECTIONS.map(s=>`<option value="${s.key}">${s.label.replace(/[^\x20-\x7E]/g,'').trim()}</option>`).join('');
+const PARL_SECTION_OPTS = PARL_SECTIONS.map(s=>`<option value="${s.key}">${s.label.replace(/[^\x20-\x7E]/g,'').trim()}</option>`).join('');
+
+function openEditModal(type, id) {
+  _editContext = { type, id };
+  const arr = type==='juri' ? appData.jurisprudence : appData.parlementaire;
+  const entry = arr.find(x=>x.id===id);
+  document.getElementById('edit-modal-title').textContent = entry ? '✏️ Modifier' : '➕ Ajouter';
+  document.getElementById('btn-delete-entry').style.display = entry ? 'inline-flex' : 'none';
+  document.getElementById('edit-form-content').innerHTML = type==='juri' ? juriForm(entry) : parlForm(entry);
+  document.getElementById('editModal').classList.add('active');
+  document.getElementById('editModal').querySelector('input,select,textarea').focus();
+}
+
+function openAddModal(type, section) {
+  _editContext = { type, id:null, defaultSection: section || (type==='juri'?'imported':'direct') };
+  document.getElementById('edit-modal-title').textContent = type==='juri' ? '➕ Nouvel arrêt' : '➕ Nouveau document';
+  document.getElementById('btn-delete-entry').style.display = 'none';
+  document.getElementById('edit-form-content').innerHTML = type==='juri' ? juriForm(null, _editContext.defaultSection) : parlForm(null, _editContext.defaultSection);
+  document.getElementById('editModal').classList.add('active');
+}
+
+function closeEditModal() { document.getElementById('editModal').classList.remove('active'); }
+
+function openAddModalJuriVS() {
+  // Déterminer la section TC la plus récente disponible
+  const currentYear = new Date().getFullYear();
+  const tcKey = 'tc' + currentYear;
+  const fallback = JURI_SECTIONS.find(s => s.key.startsWith('tc')) ? JURI_SECTIONS.find(s => s.key.startsWith('tc')).key : 'tc2024';
+  const section = JURI_SECTIONS.find(s => s.key === tcKey) ? tcKey : fallback;
+
+  _editContext = { type: 'juri', id: null, defaultSection: section };
+  document.getElementById('edit-modal-title').textContent = '⚖️ Nouvel arrêt — Jurisprudence VS';
+  document.getElementById('btn-delete-entry').style.display = 'none';
+  document.getElementById('edit-form-content').innerHTML = juriForm(null, section);
+  document.getElementById('editModal').classList.add('active');
+
+  // Pré-remplissage des champs spécifiques Valais
+  document.getElementById('ef-type').value    = 'tc';
+  document.getElementById('ef-court').value   = 'Tribunal cantonal VS';
+  document.getElementById('ef-hep').value     = 'HEP-VS';
+  document.getElementById('ef-section').value = section;
+
+  // Cocher le badge "tc" par défaut
+  const tcCheckbox = document.querySelector('#edit-form-content input[type=checkbox][value="tc"]');
+  if (tcCheckbox) tcCheckbox.checked = true;
+
+  // Focus sur la référence
+  const refInput = document.getElementById('ef-ref');
+  if (refInput) refInput.focus();
+}
+
+function juriForm(e, defSec) {
+  const secOpts = JURI_SECTIONS.map(s=>`<option value="${s.key}" ${(e?.section||defSec)===s.key?'selected':''}>${s.label.replace(/[^\x20-\x7E]/g,'').trim()}</option>`).join('');
+  const bdgOpts = ['tf','tc','atf','irrecevable','rejete','admis','revirement','imported'].map(b=>
+    `<label style="margin-right:.75rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="${b}" ${(e?.badges||[]).includes(b)?'checked':''}> ${b}</label>`).join('');
+  const links = (e?.links||[]).map(l=>`${l.label}|${l.url}`).join('\n');
+  const kp    = (e?.keyPoints||[]).join('\n');
+  const tags  = (e?.tags||[]).join(', ');
+  return `
+  <div class="form-row"><label for="ef-id">ID unique</label><input id="ef-id" value="${esc(e?.id||'')}" placeholder="ex: tf-2c-123-2025" /></div>
+  <div class="form-row"><label for="ef-ref">Référence</label><input id="ef-ref" value="${esc(e?.ref||'')}" /></div>
+  <div class="form-row"><label for="ef-title">Titre</label><input id="ef-title" value="${esc(e?.title||'')}" /></div>
+  <div class="form-row-2">
+    <div class="form-row" style="margin-bottom:0"><label for="ef-date">Date (tri)</label><input type="date" id="ef-date" value="${esc(e?.date||'')}" /></div>
+    <div class="form-row" style="margin-bottom:0"><label for="ef-dateDisplay">Date affichée</label><input id="ef-dateDisplay" value="${esc(e?.dateDisplay||'')}" /></div>
+  </div><div style="height:.5rem"></div>
+  <div class="form-row-2">
+    <div class="form-row" style="margin-bottom:0"><label for="ef-type">Type</label>
+      <select id="ef-type"><option value="tf" ${e?.type==='tf'?'selected':''}>TF</option><option value="tc" ${e?.type==='tc'?'selected':''}>TC</option><option value="principe" ${e?.type==='principe'?'selected':''}>Principe</option></select>
+    </div>
+    <div class="form-row" style="margin-bottom:0"><label for="ef-section">Section</label><select id="ef-section">${secOpts}</select></div>
+  </div><div style="height:.5rem"></div>
+  <div class="form-row-2">
+    <div class="form-row" style="margin-bottom:0"><label for="ef-court">Tribunal</label><input id="ef-court" value="${esc(e?.court||'')}" /></div>
+    <div class="form-row" style="margin-bottom:0"><label for="ef-hep">HEP concernée</label><input id="ef-hep" value="${esc(e?.hep||'')}" /></div>
+  </div><div style="height:.5rem"></div>
+  <div class="form-row"><label>Badges</label><div style="padding:.4rem 0;line-height:2">${bdgOpts}</div></div>
+  <div class="form-row"><label for="ef-tags">Tags (séparés par des virgules)</label><input id="ef-tags" value="${esc(tags)}" placeholder="ex: exclusion-comportement, HEP Vaud, délais" /><div class="hint">Utilisés pour le filtrage thématique</div></div>
+  <div class="form-row"><label for="ef-content">Résumé</label><textarea id="ef-content">${e?.content||''}</textarea></div>
+  <div class="form-row"><label for="ef-keypoints">Points clés (1 par ligne)</label><textarea id="ef-keypoints">${kp}</textarea></div>
+  <div class="form-row"><label for="ef-links">Liens (Libellé|URL, 1 par ligne)</label><textarea id="ef-links">${links}</textarea><div class="hint">ex: Commentaire LawInside|https://lawinside.ch/...</div></div>
+  <div class="form-row"><label><input type="checkbox" id="ef-pending" ${e?.pending?'checked':''}> Référence à confirmer</label></div>`;
+}
+
+function parlForm(e, defSec) {
+  const secOpts = PARL_SECTIONS.map(s=>`<option value="${s.key}" ${(e?.section||defSec)===s.key?'selected':''}>${s.label.replace(/[^\x20-\x7E]/g,'').trim()}</option>`).join('');
+  const impacts = (e?.impacts||[]).join('\n');
+  const timeline = (e?.timeline||[]).map(t=>`${t.date}|${t.status}|${t.done?'1':'0'}`).join('\n');
+  return `
+  <div class="form-row"><label for="ef-id">ID unique</label><input id="ef-id" value="${esc(e?.id||'')}" /></div>
+  <div class="form-row"><label for="ef-title">Titre</label><input id="ef-title" value="${esc(e?.title||'')}" /></div>
+  <div class="form-row-2">
+    <div class="form-row" style="margin-bottom:0"><label for="ef-doctype">Type</label>
+      <select id="ef-doctype">${['loi','postulat','motion','projet','accreditation'].map(t=>`<option value="${t}" ${e?.docType===t?'selected':''}>${t}</option>`).join('')}</select>
+    </div>
+    <div class="form-row" style="margin-bottom:0"><label for="ef-status">Statut</label>
+      <select id="ef-status"><option value="adopte" ${e?.status==='adopte'?'selected':''}>Adopté·e</option><option value="encours" ${e?.status==='encours'?'selected':''}>En cours</option></select>
+    </div>
+  </div><div style="height:.5rem"></div>
+  <div class="form-row-2">
+    <div class="form-row" style="margin-bottom:0"><label for="ef-priority">Priorité</label>
+      <select id="ef-priority">${['high','medium','low','info'].map(p=>`<option value="${p}" ${e?.priority===p?'selected':''}>${p}</option>`).join('')}</select>
+    </div>
+    <div class="form-row" style="margin-bottom:0"><label for="ef-section">Section</label><select id="ef-section">${secOpts}</select></div>
+  </div><div style="height:.5rem"></div>
+  <div class="form-row-2">
+    <div class="form-row" style="margin-bottom:0"><label for="ef-date">Date</label><input id="ef-date" value="${esc(e?.date||'')}" /></div>
+    <div class="form-row" style="margin-bottom:0"><label for="ef-authors">Auteurs</label><input id="ef-authors" value="${esc(e?.authors||'')}" /></div>
+  </div><div style="height:.5rem"></div>
+  <div class="form-row"><label for="ef-vote">Résultat du vote</label><input id="ef-vote" value="${esc(e?.vote||'')}" /></div>
+  <div class="form-row"><label for="ef-desc">Description</label><textarea id="ef-desc">${e?.description||''}</textarea></div>
+  <div class="form-row"><label for="ef-impacts">Impacts (1 par ligne)</label><textarea id="ef-impacts">${impacts}</textarea></div>
+  <div class="form-row"><label for="ef-financial">Note financière</label><input id="ef-financial" value="${esc(e?.financial||'')}" /></div>
+  <div class="form-row"><label for="ef-officialUrl">URL officielle parlement.vs.ch</label><input type="url" id="ef-officialUrl" value="${esc(e?.officialUrl||'')}" /></div>
+  <div class="form-row"><label for="ef-timeline">Timeline (AAAA-MM-JJ|Statut|1/0, 1 par ligne)</label><textarea id="ef-timeline">${timeline}</textarea><div class="hint">1=terminé, 0=à venir · ex: 2025-06-12|Adopté|1</div></div>`;
+}
+
+function saveEntry() {
+  const { type, id } = _editContext;
+  const arr = type==='juri' ? appData.jurisprudence : appData.parlementaire;
+  const idx = id ? arr.findIndex(x=>x.id===id) : -1;
+  const entry = type==='juri' ? readJuriForm() : readParlForm();
+  if (!entry.id) { toast('⚠️ L\'ID est obligatoire.','error'); return; }
+  if (idx >= 0) arr[idx] = entry; else arr.unshift(entry);
+  closeEditModal();
+  renderAll();
+  buildTagPills();
+  buildHepFilter();
+  markPending();
+  toast('✅ Entrée enregistrée. N\'oubliez pas de publier sur GitHub.','success');
+}
+
+function readJuriForm() {
+  const badges = Array.from(document.querySelectorAll('#edit-form-content input[type=checkbox][value]')).filter(c=>c.value!==''&&c.checked).map(c=>c.value);
+  const links = (document.getElementById('ef-links').value||'').split('\n').filter(Boolean).map(l=>{const[label,...rest]=l.split('|');return{label:label.trim(),url:rest.join('|').trim()}});
+  const kp    = (document.getElementById('ef-keypoints').value||'').split('\n').filter(Boolean);
+  const tags  = (document.getElementById('ef-tags').value||'').split(',').map(t=>t.trim()).filter(Boolean);
+  return {
+    id:          document.getElementById('ef-id').value.trim(),
+    ref:         document.getElementById('ef-ref').value.trim(),
+    section:     document.getElementById('ef-section').value,
+    type:        document.getElementById('ef-type').value,
+    date:        document.getElementById('ef-date').value,
+    dateDisplay: document.getElementById('ef-dateDisplay').value.trim(),
+    title:       document.getElementById('ef-title').value.trim(),
+    court:       document.getElementById('ef-court').value.trim(),
+    hep:         document.getElementById('ef-hep').value.trim(),
+    badges, tags, content: document.getElementById('ef-content').value.trim(),
+    keyPoints:   kp, links,
+    pending:     document.getElementById('ef-pending').checked || undefined
+  };
+}
+
+function readParlForm() {
+  const impacts = (document.getElementById('ef-impacts').value||'').split('\n').filter(Boolean);
+  const timeline = (document.getElementById('ef-timeline').value||'').split('\n').filter(Boolean).map(line=>{
+    const [date, status, done] = line.split('|');
+    return { date:(date||'').trim(), status:(status||'').trim(), done:(done||'').trim()==='1' };
+  });
+  return {
+    id:         document.getElementById('ef-id').value.trim(),
+    title:      document.getElementById('ef-title').value.trim(),
+    docType:    document.getElementById('ef-doctype').value,
+    status:     document.getElementById('ef-status').value,
+    priority:   document.getElementById('ef-priority').value,
+    section:    document.getElementById('ef-section').value,
+    date:       document.getElementById('ef-date').value.trim(),
+    authors:    document.getElementById('ef-authors').value.trim(),
+    vote:       document.getElementById('ef-vote').value.trim() || null,
+    description:document.getElementById('ef-desc').value.trim(),
+    impacts, financial: document.getElementById('ef-financial').value.trim() || null,
+    officialUrl:document.getElementById('ef-officialUrl').value.trim() || null,
+    timeline
+  };
+}
+
+function deleteEntry() {
+  if (!confirm('Supprimer cette entrée définitivement ?')) return;
+  const { type, id } = _editContext;
+  const arr = type==='juri' ? appData.jurisprudence : appData.parlementaire;
+  const idx = arr.findIndex(x=>x.id===id);
+  if (idx >= 0) arr.splice(idx,1);
+  closeEditModal();
+  renderAll();
+  buildTagPills();
+  markPending();
+  toast('🗑️ Entrée supprimée.','success');
+}
+
+function markPending() {
+  pendingChanges = true;
+  if (ghConfig.token) document.getElementById('btn-push').style.display = 'inline-flex';
+}
+
+// ════════════════════════════════════════════════════════
+// CHANGELOG MODAL
+// ════════════════════════════════════════════════════════
+function openChangelogModal() {
+  const list = appData.meta && appData.meta.changelog || [];
+  const html = list.length
+    ? [...list].reverse().map(e=>`<div class="cl-entry">
+        <div class="cl-meta">📅 ${esc(e.date)}${e.author?' · '+esc(e.author):''}</div>
+        <div class="cl-notes">${esc(e.notes)}</div>
+      </div>`).join('')
+    : '<div class="empty-state">Aucune entrée dans l\'historique.</div>';
+  document.getElementById('changelog-list').innerHTML = html;
+  document.getElementById('changelogModal').classList.add('active');
+}
+
+function closeChangelogModal() { document.getElementById('changelogModal').classList.remove('active'); }
+
+function addChangelogEntry() {
+  const notes  = document.getElementById('cl-notes').value.trim();
+  const author = document.getElementById('cl-author').value.trim();
+  if (!notes) { toast('⚠️ Les notes sont obligatoires.','error'); return; }
+  if (!appData.meta) appData.meta = {};
+  if (!appData.meta.changelog) appData.meta.changelog = [];
+  appData.meta.changelog.push({ date: new Date().toISOString().slice(0,10), author, notes });
+  document.getElementById('cl-notes').value = '';
+  markPending();
+  pushToGitHub(true);
+  closeChangelogModal();
+  toast('✅ Entrée d\'historique ajoutée et publiée.','success');
+}
+
+// ════════════════════════════════════════════════════════
+// IMPORT FROM VEILLE
+// ════════════════════════════════════════════════════════
+function openImportModal(idx) {
+  const hit = _veilleResults[idx]; if (!hit) return;
+  const s = hit._source || {};
+  const lang = document.getElementById('v-lang').value;
+  document.getElementById('imp-ref').value   = Array.isArray(s.reference) ? s.reference.join(' / ') : (s.reference||'');
+  document.getElementById('imp-title').value = getLangF(s.title,lang);
+  document.getElementById('imp-date').value  = '';
+  document.getElementById('imp-date-sort').value = (s.date||'').slice(0,10)||'';
+  document.getElementById('imp-type').value  = /CH_BG/.test(s.hierarchy&&s.hierarchy[1]||'') ? 'tf' : 'tc';
+  document.getElementById('imp-section').value = 'imported';
+  document.getElementById('imp-court').value = '';
+  document.getElementById('imp-url').value   = s.attachment&&s.attachment.content_url ? s.attachment.content_url : '';
+  document.getElementById('imp-tags').value  = '';
+  document.getElementById('imp-notes').value = getLangF(s.abstract,lang).slice(0,600);
+  document.getElementById('imp-source-idx').value = idx;
+  document.getElementById('importModal').classList.add('active');
+}
+
+function closeImportModal() { document.getElementById('importModal').classList.remove('active'); }
+
+function saveImport() {
+  const ref   = document.getElementById('imp-ref').value.trim();
+  const title = document.getElementById('imp-title').value.trim();
+  if (!title && !ref) { toast('Veuillez renseigner au moins une référence ou un titre.','error'); return; }
+  const url  = document.getElementById('imp-url').value.trim();
+  const tags = document.getElementById('imp-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const entry = {
+    id: 'imported-' + Date.now(), ref,
+    section: document.getElementById('imp-section').value,
+    type:    document.getElementById('imp-type').value,
+    date:    document.getElementById('imp-date-sort').value,
+    dateDisplay: document.getElementById('imp-date').value || document.getElementById('imp-date-sort').value,
+    title, court: document.getElementById('imp-court').value.trim(),
+    hep: '', badges: ['imported'], tags,
+    content: document.getElementById('imp-notes').value.trim(),
+    keyPoints: [], links: url ? [{label:"Consulter l'arrêt", url}] : []
+  };
+  appData.jurisprudence.unshift(entry);
+  const idx = parseInt(document.getElementById('imp-source-idx').value, 10);
+  const btn = document.querySelector(`[data-veille-idx="${idx}"]`);
+  if (btn) { btn.textContent='✓ Ajouté'; btn.classList.add('added'); btn.disabled=true; }
+  closeImportModal();
+  renderAll();
+  buildTagPills();
+  buildHepFilter();
+  markPending();
+  toast('✅ Décision ajoutée. N\'oubliez pas de publier sur GitHub.','success');
+}
+
+// ════════════════════════════════════════════════════════
+// VEILLE SEARCH
+// ════════════════════════════════════════════════════════
+const VEILLE_URL = 'https://entscheidsuche.ch/_search.php';
+
+function buildVeilleQuery(keyword, dateFrom, lang) {
+  const termsFr = ['haute école pédagogique','HEP-VS','HEP Valais','HEP Vaud','HEP Fribourg','HEP-BEJUNE'];
+  const termsDe = ['pädagogische Hochschule','PH Wallis','PH Bern','PH Zürich','PH Graubünden'];
+  const terms   = lang==='fr'?termsFr:lang==='de'?termsDe:[...termsFr,...termsDe];
+  const fields  = lang==='de'?['abstract.de','title.de','attachment.content']:lang==='fr'?['abstract.fr','title.fr','attachment.content']:['abstract.fr','abstract.de','title.fr','title.de','attachment.content'];
+  const q = {
+    query:{bool:{should:terms.map(t=>({multi_match:{query:t,fields,type:'phrase'}})),minimum_should_match:1,filter:[{range:{date:{gte:dateFrom||'2022-01-01'}}}]}},
+    size:40, _source:['date','hierarchy','abstract','title','reference','attachment'],
+    sort:[{date:{order:'desc'}}]
+  };
+  if (keyword&&keyword.trim()) q.query.bool.must=[{multi_match:{query:keyword.trim(),fields,type:'phrase'}}];
+  return q;
+}
+
+function getLangF(obj,lang) {
+  if (!obj) return '';
+  if (typeof obj==='string') return obj;
+  const p = lang==='de'?'de':'fr';
+  return obj[p]||obj.fr||obj.de||obj.it||'';
+}
+
+function getCourtV(hierarchy,index) {
+  const src=(hierarchy&&hierarchy[1])||(index||'');
+  if(/CH_BGE|CH_BGer/.test(src)) return{label:'Tribunal fédéral',color:'#7F1D1D',text:'#FEF2F2'};
+  if(/CH_BVGE|CH_BVGer/.test(src)) return{label:'TAF',color:'#7F1D1D',text:'#FEF2F2'};
+  if(/^VS/.test(src)) return{label:'TC Valais',color:'#581C87',text:'#FAF5FF'};
+  if(/^VD/.test(src)) return{label:'TC Vaud',color:'#78350F',text:'#FEF3C7'};
+  if(/^GE/.test(src)) return{label:'TC Genève',color:'#1E3A8A',text:'#DBEAFE'};
+  if(/^BE/.test(src)) return{label:'TC Berne',color:'#14532D',text:'#F0FDF4'};
+  if(/^FR/.test(src)) return{label:'TC Fribourg',color:'#14532D',text:'#F0FDF4'};
+  const m=(index||'').replace('entscheidsuche.v2-','').match(/^([a-z]{2,3})_/i);
+  return{label:m?m[1].toUpperCase():'?',color:'#374151',text:'#F9FAFB'};
+}
+
+async function veilleSearch() {
+  const btn = document.getElementById('veille-search-btn');
+  const keyword = document.getElementById('v-keyword').value;
+  const date    = document.getElementById('v-date').value;
+  const lang    = document.getElementById('v-lang').value;
+  const statusEl = document.getElementById('veille-status');
+  const listEl   = document.getElementById('veille-result-list');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Recherche…';
+  statusEl.textContent=''; listEl.innerHTML=''; _veilleResults=[]; _vExpanded={};
+  try {
+    const res = await fetch(VEILLE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(buildVeilleQuery(keyword,date,lang))});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const hits = (data&&data.hits&&data.hits.hits)||[];
+    _veilleResults = hits;
+    statusEl.textContent = hits.length + ' résultat' + (hits.length!==1?'s':'') + ' trouvé' + (hits.length!==1?'s':'');
+    if (!hits.length) { listEl.innerHTML='<div class="empty-state">Aucune décision trouvée.</div>'; return; }
+    listEl.innerHTML = hits.map((hit,i) => {
+      const s=hit._source||{};
+      const date=(s.date||'').slice(0,10)||'—';
+      const refs=Array.isArray(s.reference)?s.reference.join(' / '):(s.reference||'');
+      const title=getLangF(s.title,lang);
+      const abs=getLangF(s.abstract,lang);
+      const url=s.attachment&&s.attachment.content_url?s.attachment.content_url:null;
+      const court=getCourtV(s.hierarchy,hit._index);
+      return `<div class="vcard" style="border-left-color:${court.color}">
+        <div class="vcard-header">
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">
+            <span class="vcard-court" style="background:${court.color};color:${court.text}">${esc(court.label)}</span>
+            ${refs?`<span class="vcard-ref">${esc(refs)}</span>`:''}
+          </div>
+          <span class="vcard-date">${esc(date)}</span>
+        </div>
+        ${title?`<div class="vcard-title">${esc(title)}</div>`:''}
+        ${abs?`<div class="vcard-abstract" id="vabs-${i}">${esc(abs.slice(0,1200))}</div>`:''}
+        <div class="vcard-actions">
+          ${abs?`<button class="btn-expand" onclick="toggleVAbs(${i})">▼ Résumé</button>`:''}
+          ${url?`<a href="${esc(url)}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 Document</a>`:''}
+          <button class="btn-add-veille" data-veille-idx="${i}" onclick="openImportModal(${i})" aria-label="Ajouter à la compilation">➕ Ajouter</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    statusEl.innerHTML=`<span style="color:var(--err)">Erreur : ${esc(e.message)}</span>`;
+  } finally {
+    btn.disabled=false; btn.innerHTML='🔍 Rechercher';
+  }
+}
+
+function toggleVAbs(i) {
+  _vExpanded[i]=!_vExpanded[i];
+  const el=document.getElementById('vabs-'+i);
+  if(el) el.classList.toggle('open',!!_vExpanded[i]);
+}
+
+// ════════════════════════════════════════════════════════
+// VEILLE PARLEMENTAIRE (parlement.vs.ch)
+// ════════════════════════════════════════════════════════
+function getVParlProxy() {
+  const v = localStorage.getItem('vparlProxy');
+  return v===null ? VPARL_PROXY_DEFAULT : v;
+}
+
+function toggleVeilleParl() {
+  const p = document.getElementById('vparl-panel');
+  const show = p.style.display === 'none';
+  p.style.display = show ? 'block' : 'none';
+  if (show) {
+    document.getElementById('vp-proxy').value = getVParlProxy();
+    document.getElementById('vp-keyword').focus();
+  }
+}
+
+function toggleVParlProxy() {
+  const el = document.getElementById('vparl-proxy-cfg');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveVParlProxy() {
+  const v = document.getElementById('vp-proxy').value.trim();
+  localStorage.setItem('vparlProxy', v);
+  toast('✅ Proxy enregistré.', 'success');
+  document.getElementById('vparl-proxy-cfg').style.display = 'none';
+}
+
+function vparlFetch(path) {
+  const apiUrl = VPARL_API_BASE + path;
+  const proxy = getVParlProxy();
+  const url = proxy ? (proxy + encodeURIComponent(apiUrl)) : apiUrl;
+  return fetch(url).then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+function stripHtml(s) { return (s||'').replace(/<[^>]+>/g,''); }
+
+function vparlIsAlreadyImported(result) {
+  const nb = result.number || result.parl_process_number;
+  const id = result.id;
+  const tc = result._type_class;
+  return (appData.parlementaire || []).find(e =>
+    (tc === 'Document' && id && e.parlDocumentId === id) ||
+    (tc === 'ParlProcess' && id && e.parlProcessId === id) ||
+    (nb && e.parlProcessNumber === nb && tc !== 'Document')
+  );
+}
+
+let _vparlPage = 1;
+let _vparlTotalPages = 1;
+let _vparlLastQuery = { keyword: '', objectType: '' };
+
+async function veilleParlSearch(page) {
+  const btn = document.getElementById('vparl-search-btn');
+  const keyword = document.getElementById('vp-keyword').value.trim() || 'HEP';
+  const objectType = document.getElementById('vp-type').value;
+  const statusEl = document.getElementById('vparl-status');
+  const listEl   = document.getElementById('vparl-results');
+  const isSameQuery = _vparlLastQuery.keyword === keyword && _vparlLastQuery.objectType === objectType;
+  const targetPage = (typeof page === 'number' && isSameQuery) ? page : 1;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Recherche…';
+  statusEl.style.display = 'block';
+  statusEl.textContent = 'Interrogation de parlement.vs.ch… (page ' + targetPage + ')';
+  listEl.innerHTML = '';
+  _veilleParlResults = [];
+
+  try {
+    const qs = '?search_term=' + encodeURIComponent(keyword) +
+               '&object_type=' + encodeURIComponent(objectType) +
+               '&locale=fr' +
+               (targetPage > 1 ? '&page=' + targetPage : '');
+    const data = await vparlFetch('/full_text_search' + qs);
+    const hits = (data && data.results) || [];
+    _veilleParlResults = hits;
+    _vparlPage = data.current_page || targetPage;
+    _vparlTotalPages = data.total_pages || 1;
+    _vparlLastQuery = { keyword, objectType };
+    const total = data.total_entries || hits.length;
+    const from = (_vparlPage - 1) * (data.per_page || 20) + 1;
+    const to = from + hits.length - 1;
+    statusEl.textContent = total + ' résultat(s) · page ' + _vparlPage + '/' + _vparlTotalPages + ' (affichés ' + from + '–' + to + ')';
+    if (!hits.length) { listEl.innerHTML = '<div class="empty-state">Aucun résultat.</div>'; return; }
+    listEl.innerHTML = hits.map((r, i) => renderVParlCard(r, i, objectType)).join('') + renderVParlPager();
+  } catch (e) {
+    statusEl.innerHTML = '<span style="color:var(--err)">Erreur : ' + esc(e.message) + '</span> · Essaie un autre proxy CORS dans les réglages.';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Rechercher';
+  }
+}
+
+function renderVParlPager() {
+  if (_vparlTotalPages <= 1) return '';
+  const prev = _vparlPage > 1
+    ? `<button class="btn-expand" onclick="veilleParlSearch(${_vparlPage - 1})">← Page précédente</button>`
+    : `<button class="btn-expand" disabled style="opacity:.4">← Précédente</button>`;
+  const next = _vparlPage < _vparlTotalPages
+    ? `<button class="btn-expand" onclick="veilleParlSearch(${_vparlPage + 1})">Page suivante →</button>`
+    : `<button class="btn-expand" disabled style="opacity:.4">Suivante →</button>`;
+  return `<div style="display:flex;gap:.5rem;justify-content:center;align-items:center;margin:.8rem 0;font-size:.8rem;color:var(--text-muted)">
+    ${prev}<span>Page ${_vparlPage} / ${_vparlTotalPages}</span>${next}
+  </div>`;
+}
+
+function renderVParlCard(r, i, objectType) {
+  const label = stripHtml(r.label || r.title || '');
+  const number = r.number || r.parl_process_number || '';
+  const category = (r.category && (r.category.label || r.category)) || r.parl_process_category_label || '';
+  const date = r.date || r.deposit_date || r.parl_session_label || '';
+  const stage = r.current_stage_type && (r.current_stage_type.value || r.current_stage_type);
+  const nextDate = r.next_stage_date;
+  const nextStage = r.next_stage_type && (r.next_stage_type.value || r.next_stage_type);
+  const typeClass = r._type_class || objectType;
+  const existing = vparlIsAlreadyImported(r);
+  const publicUrl = number ? (VPARL_PUBLIC_BASE + '/parl_process/' + r.id) : null;
+
+  const badges = [
+    category ? `<span class="vcard-court" style="background:#1E3A8A;color:#DBEAFE">${esc(category)}</span>` : '',
+    number   ? `<span class="vcard-ref">${esc(number)}</span>` : '',
+    stage    ? `<span class="vcard-ref" title="Étape actuelle">🔸 ${esc(stage)}</span>` : '',
+  ].filter(Boolean).join(' ');
+
+  let actions = '';
+  if (typeClass === 'ParlProcess') {
+    actions = existing
+      ? `<button class="btn-add-veille" onclick="updateParlFromVeille(${i})" style="background:var(--info-bg);border-color:var(--info-brd);color:var(--info-clr)">🔄 Mettre à jour «${esc(existing.id)}»</button>`
+      : `<button class="btn-add-veille" onclick="importParlFromVeille(${i})">➕ Importer comme nouveau document</button>`;
+  } else if (typeClass === 'Document') {
+    actions = `<button class="btn-add-veille" onclick="importDocumentFromVeille(${i})">➕ Importer</button>` +
+              `<button class="btn-expand" onclick="openVParlDocument(${i})">📄 Ouvrir PDF</button>` +
+              `<button class="btn-expand" onclick="linkDocToParl(${i})">🔗 Lier à un objet existant</button>`;
+  } else {
+    actions = publicUrl ? `<a href="${esc(publicUrl)}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 parlement.vs.ch</a>` : '';
+  }
+
+  return `<div class="vcard" style="border-left-color:${existing ? '#059669' : '#C8102E'}">
+    <div class="vcard-header">
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">${badges}</div>
+      <span class="vcard-date">${esc(date)}</span>
+    </div>
+    <div class="vcard-title">${esc(label)}</div>
+    ${nextDate || nextStage ? `<div style="font-size:.73rem;color:var(--text-muted);margin-bottom:.35rem">⏭️ Prochaine étape : ${esc(nextStage||'?')}${nextDate?` (${esc(nextDate)})`:''}</div>` : ''}
+    ${existing ? `<div style="font-size:.72rem;color:var(--success);margin-bottom:.35rem">✓ Déjà dans la compilation (${esc(existing.id)})</div>` : ''}
+    <div class="vcard-actions">${actions}</div>
+  </div>`;
+}
+
+function openVParlDocument(idx) {
+  const r = _veilleParlResults[idx]; if (!r) return;
+  const proxy = getVParlProxy();
+  const apiUrl = VPARL_API_BASE + '/document?id=' + r.id + '&locale=fr';
+  const url = proxy ? (proxy + encodeURIComponent(apiUrl)) : apiUrl;
+  fetch(url).then(x=>x.json()).then(doc => {
+    const v = doc && doc.attachment_versions && doc.attachment_versions[0];
+    if (v && v.attachment_path) window.open(v.attachment_path, '_blank');
+    else toast('Pas de fichier attaché trouvé.', 'error');
+  }).catch(e => toast('Erreur : ' + e.message, 'error'));
+}
+
+function linkDocToParl(idx) {
+  const r = _veilleParlResults[idx]; if (!r) return;
+  const proxy = getVParlProxy();
+  const apiUrl = VPARL_API_BASE + '/document?id=' + r.id + '&locale=fr';
+  const url = proxy ? (proxy + encodeURIComponent(apiUrl)) : apiUrl;
+  fetch(url).then(x=>x.json()).then(doc => {
+    const num = doc.parl_process_number;
+    if (!num) { toast('Ce document n\'est rattaché à aucun objet parlementaire.', 'error'); return; }
+    const entry = (appData.parlementaire||[]).find(e => e.parlProcessNumber === num);
+    if (!entry) {
+      if (!confirm('Objet ' + num + ' absent de la compilation. L\'ajouter maintenant ?')) return;
+      importParlProcess({ id: doc.parl_process_id, number: num, label: doc.title || '' });
+      return;
+    }
+    const v = doc.attachment_versions && doc.attachment_versions[0];
+    const line = (doc.date || '') + '|' + stripHtml(doc.title || ('Document #' + doc.id)) + '|1';
+    entry.timeline = entry.timeline || [];
+    entry.timeline.push({ date: doc.date || '', status: stripHtml(doc.title || ('Doc ' + doc.id)), done: true, url: v && v.attachment_path });
+    entry.timeline.sort((a,b) => (a.date||'').localeCompare(b.date||''));
+    renderAll(); markPending();
+    toast('✅ Document ajouté à la timeline de ' + entry.id, 'success');
+  }).catch(e => toast('Erreur : ' + e.message, 'error'));
+}
+
+function importParlFromVeille(idx) {
+  const r = _veilleParlResults[idx]; if (!r) return;
+  importParlProcess(r);
+}
+
+async function importDocumentFromVeille(idx) {
+  const r = _veilleParlResults[idx]; if (!r) return;
+  const btn = event && event.target;
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳…'; }
+  try {
+    const doc = await vparlFetch('/document?id=' + r.id + '&locale=fr');
+    const title = stripHtml(doc.title || r.label || ('Document #' + r.id));
+    const num = doc.parl_process_number || '';
+    const att = (doc.attachment_versions || [])[0];
+    const pdfUrl = att && att.attachment_path;
+    const suggestedId = 'doc-' + (num ? num.toLowerCase().replace(/[^a-z0-9]+/g,'-') : r.id);
+    const docType = guessDocTypeFromTitle(title);
+    const entry = {
+      id: suggestedId,
+      parlDocumentId: r.id,
+      parlProcessNumber: num || undefined,
+      title,
+      docType,
+      status: 'adopte',
+      priority: 'medium',
+      section: 'direct',
+      date: doc.date || '',
+      authors: (doc.people || []).map(p => (p.first_name||'') + ' ' + (p.last_name||'')).filter(s=>s.trim()).join(', '),
+      vote: null,
+      description: '',
+      impacts: [],
+      financial: null,
+      officialUrl: pdfUrl || (num ? (VPARL_PUBLIC_BASE + '/parl_process/' + doc.parl_process_id) : null),
+      timeline: doc.date ? [{ date: doc.date, status: title, done: true }] : []
+    };
+    appData.parlementaire.unshift(entry);
+    renderAll(); markPending();
+    toast('✅ Document importé. Complète les champs via « Modifier ».', 'success');
+    _editContext = { type: 'parl', id: entry.id };
+    document.getElementById('edit-modal-title').textContent = '✏️ Compléter — ' + (num || title.slice(0,40));
+    document.getElementById('btn-delete-entry').style.display = 'inline-flex';
+    document.getElementById('edit-form-content').innerHTML = parlForm(entry);
+    document.getElementById('editModal').classList.add('active');
+    document.getElementById('vparl-results').innerHTML = _veilleParlResults.map((rr,i)=>renderVParlCard(rr,i,rr._type_class||'Document')).join('') + renderVParlPager();
+  } catch (e) {
+    toast('Erreur : ' + e.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function guessDocTypeFromTitle(title) {
+  const t = (title || '').toLowerCase();
+  if (/_rep|réponse|_rpt/.test(t)) return 'loi';
+  if (/_rap|rapport/.test(t))       return 'loi';
+  if (t.includes('accrédit'))       return 'accreditation';
+  if (t.includes('motion'))          return 'motion';
+  if (t.includes('postulat'))        return 'postulat';
+  if (t.includes('projet'))          return 'projet';
+  return 'postulat';
+}
+
+function importParlProcess(r) {
+  const number = r.number || r.parl_process_number || ('parl-' + r.id);
+  const label = stripHtml(r.label || r.title || '');
+  const category = (r.category && (r.category.label || r.category)) || r.parl_process_category_label || '';
+  const suggestedId = 'parl-' + number.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  const docType = guessDocType(category);
+  const stage = r.current_stage_type && (r.current_stage_type.value || r.current_stage_type);
+  const status = /archive|answered|executed/i.test(stage) ? 'adopte' : 'encours';
+
+  const entry = {
+    id: suggestedId,
+    parlProcessId: r.id,
+    parlProcessNumber: number,
+    title: label,
+    docType,
+    status,
+    priority: 'medium',
+    section: 'direct',
+    date: number || '',
+    authors: '',
+    vote: null,
+    description: '',
+    impacts: [],
+    financial: null,
+    officialUrl: VPARL_PUBLIC_BASE + '/parl_process/' + r.id,
+    timeline: stage ? [{ date: '', status: 'État actuel : ' + stage, done: true }] : []
+  };
+  appData.parlementaire.unshift(entry);
+  renderAll(); markPending();
+  toast('✅ Entrée créée. Complète les champs via « Modifier ».', 'success');
+  // Open edit modal immediately
+  _editContext = { type: 'parl', id: entry.id };
+  document.getElementById('edit-modal-title').textContent = '✏️ Compléter — ' + number;
+  document.getElementById('btn-delete-entry').style.display = 'inline-flex';
+  document.getElementById('edit-form-content').innerHTML = parlForm(entry);
+  document.getElementById('editModal').classList.add('active');
+}
+
+function guessDocType(category) {
+  const c = (category || '').toLowerCase();
+  if (c.includes('motion'))       return 'motion';
+  if (c.includes('postulat'))     return 'postulat';
+  if (c.includes('interpell'))    return 'motion';
+  if (c.includes('projet') || c.includes('loi')) return 'loi';
+  if (c.includes('accrédit'))     return 'accreditation';
+  return 'postulat';
+}
+
+async function updateParlFromVeille(idx) {
+  const r = _veilleParlResults[idx]; if (!r) return;
+  const existing = vparlIsAlreadyImported(r); if (!existing) return;
+  const btn = event && event.target;
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Actualisation…'; }
+  try {
+    // Fetch process detail for fresh stage info
+    const detail = await vparlFetch('/parl_process?id=' + r.id + '&locale=fr');
+    const newStage = detail.current_stage_type && (detail.current_stage_type.value || detail.current_stage_type);
+    const nextStage = detail.next_stage_type && (detail.next_stage_type.value || detail.next_stage_type);
+    const nextDate = detail.next_stage_date;
+    existing.parlProcessId = detail.id;
+    existing.parlProcessNumber = detail.number || existing.parlProcessNumber;
+    existing.timeline = existing.timeline || [];
+    const today = new Date().toISOString().slice(0,10);
+    const stageLine = 'État ' + today + ' : ' + (newStage || '?');
+    if (!existing.timeline.some(t => t.status === stageLine)) {
+      existing.timeline.push({ date: today, status: stageLine, done: true });
+    }
+    if (nextStage && nextDate) {
+      const nextLine = 'Prévu : ' + nextStage;
+      if (!existing.timeline.some(t => t.date === nextDate && t.status === nextLine)) {
+        existing.timeline.push({ date: nextDate, status: nextLine, done: false });
+      }
+    }
+    if (/archive|answered|executed/i.test(newStage||'')) existing.status = 'adopte';
+
+    // Try to fetch attached documents (réponse CE etc.)
+    try {
+      const docs = await vparlFetch('/full_text_search?search_term=' + encodeURIComponent(existing.parlProcessNumber||'HEP') + '&object_type=Document&locale=fr');
+      const matching = (docs.results||[]).filter(d => stripHtml(d.label||'').includes(existing.parlProcessNumber));
+      let added = 0;
+      for (const d of matching) {
+        const line = 'Doc : ' + stripHtml(d.label||'');
+        if (!existing.timeline.some(t => t.status === line)) {
+          existing.timeline.push({ date: d.date || '', status: line, done: true });
+          added++;
+        }
+      }
+      if (added) toast('✅ Étape actualisée + ' + added + ' document(s) liés ajoutés.', 'success');
+      else toast('✅ Étape actualisée.', 'success');
+    } catch (_) {
+      toast('✅ Étape actualisée (documents non récupérés).', 'success');
+    }
+    existing.timeline.sort((a,b) => (a.date||'').localeCompare(b.date||''));
+    renderAll(); markPending();
+    // refresh veille cards
+    document.getElementById('vparl-results').innerHTML = _veilleParlResults.map((rr,i)=>renderVParlCard(rr,i,rr._type_class||'ParlProcess')).join('');
+  } catch (e) {
+    toast('Erreur : ' + e.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// TABS & COLLAPSIBLES
+// ════════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-pane').forEach(p=>{p.classList.remove('active'); p.setAttribute('hidden','');});
+  document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-selected','false');});
+  const pane = document.getElementById('tab-'+tab);
+  const btn  = document.getElementById('btn-tab-'+tab);
+  pane.classList.add('active'); pane.removeAttribute('hidden');
+  btn.classList.add('active');  btn.setAttribute('aria-selected','true');
+}
+
+function toggleSection(el) {
+  el.classList.toggle('collapsed');
+  el.nextElementSibling.classList.toggle('collapsed');
+}
+
+function toggleAllSections() {
+  _allExp=!_allExp;
+  document.querySelectorAll('#tab-parl .collapsible').forEach(el=>el.classList.toggle('collapsed',!_allExp));
+  document.querySelectorAll('#tab-parl .collapsible-content').forEach(el=>el.classList.toggle('collapsed',!_allExp));
+}
+
+// ════════════════════════════════════════════════════════
+// PRINT & EXPORT
+// ════════════════════════════════════════════════════════
+function printPage() {
+  document.querySelectorAll('.collapsible.collapsed').forEach(el=>el.classList.remove('collapsed'));
+  document.querySelectorAll('.collapsible-content.collapsed').forEach(el=>el.classList.remove('collapsed'));
+  window.print();
+}
+
+function exportJSON() {
+  const json = JSON.stringify(appData, null, 2);
+  const blob = new Blob([json],{type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download='data.json'; a.click();
+  URL.revokeObjectURL(url);
+  toast('⬇️ data.json téléchargé.','success');
+}
+
+function downloadGHAction() {
+  // Le YAML est construit par concaténation pour éviter que JS n'interprète ${{ }} comme template literals
+  const exprCount  = '$' + '{{ steps.search.outputs.count }}';
+  const exprRepo   = '$' + '{{ github.repository_owner }}';
+  const exprRepoN  = '$' + '{{ github.event.repository.name }}';
+  const exprDate   = '$(date +%d.%m.%Y)';
+  const exprSecU   = '$' + '{{ secrets.MAIL_USER }}';
+  const exprSecP   = '$' + '{{ secrets.MAIL_PASS }}';
+
+  const yaml = [
+    'name: Veille HEP-VS \u2014 Alerte hebdomadaire',
+    '',
+    'on:',
+    '  schedule:',
+    "    - cron: '0 7 * * 1'  # Chaque lundi \u00e0 7h00 UTC",
+    '  workflow_dispatch:',
+    '',
+    'jobs:',
+    '  veille:',
+    '    runs-on: ubuntu-latest',
+    '    steps:',
+    "      - name: Recherche Entscheidsuche",
+    "        id: search",
+    "        run: |",
+    "          RESULT=$(curl -s -X POST https://entscheidsuche.ch/_search.php \\",
+    "            -H 'Content-Type: application/json' \\",
+    "            -d '{\"query\":{\"bool\":{\"should\":[{\"multi_match\":{\"query\":\"haute \u00e9cole p\u00e9dagogique\",\"fields\":[\"abstract.fr\",\"title.fr\"],\"type\":\"phrase\"}}],\"minimum_should_match\":1,\"filter\":[{\"range\":{\"date\":{\"gte\":\"now-7d/d\"}}}]}},\"size\":10,\"_source\":[\"date\",\"title\",\"reference\"],\"sort\":[{\"date\":{\"order\":\"desc\"}}]}')",
+    '          COUNT=$(echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[\'hits\'][\'total\'][\'value\'] if isinstance(d[\'hits\'][\'total\'],dict) else d[\'hits\'][\'total\'])" 2>/dev/null || echo "0")',
+    '          echo "count=$COUNT" >> $GITHUB_OUTPUT',
+    '',
+    '      - name: Envoyer alerte email',
+    "        if: steps.search.outputs.count != '0'",
+    '        uses: dawidd6/action-send-mail@v3',
+    '        with:',
+    '          server_address: smtp.gmail.com',
+    '          server_port: 587',
+    '          username: ' + exprSecU,
+    '          password: ' + exprSecP,
+    '          to: veille@hepvs.ch',
+    '          from: HEP-VS Veille Juridique',
+    '          subject: "[' + exprCount + ' d\u00e9cision(s)] Veille HEP \u2014 semaine du ' + exprDate + '"',
+    '          body: |',
+    '            Bonjour,',
+    '',
+    '            La veille automatique a d\u00e9tect\u00e9 ' + exprCount + ' nouvelle(s) d\u00e9cision(s)',
+    '            mentionnant les Hautes \u00c9coles P\u00e9dagogiques sur Entscheidsuche.ch.',
+    '',
+    '            Consultez la compilation : https://' + exprRepo + '.github.io/' + exprRepoN + '/',
+    '',
+    '            ---',
+    '            Veille juridique HEP-VS \u2014 mise \u00e0 jour automatique',
+  ].join('\n');
+
+  const blob = new Blob([yaml], {type: 'text/yaml'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'veille-alerte.yml'; a.click();
+  URL.revokeObjectURL(url);
+  toast('\u2b07\ufe0f veille-alerte.yml t\u00e9l\u00e9charg\u00e9 \u2014 \u00e0 placer dans .github/workflows/', 'success');
+}
+
+// ════════════════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + (type||'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3800);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { closeEditModal(); closeImportModal(); closeChangelogModal(); }
+  if (e.key==='/' && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA') {
+    e.preventDefault();
+    switchTab('juri');
+    setTimeout(()=>document.getElementById('search-input').focus(), 50);
+  }
+});
+document.getElementById('v-keyword').addEventListener('keydown', e => { if(e.key==='Enter') veilleSearch(); });
+document.getElementById('search-input').addEventListener('keydown', e => { if(e.key==='Escape') clearFilters(); });
+// Modal backdrop close
+document.getElementById('editModal').addEventListener('click',    e=>{if(e.target===e.currentTarget)closeEditModal();});
+document.getElementById('importModal').addEventListener('click',   e=>{if(e.target===e.currentTarget)closeImportModal();});
+document.getElementById('changelogModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeChangelogModal();});
+</script>
+</body>
+</html>

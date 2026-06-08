@@ -1,0 +1,541 @@
+{
+  "meta": {
+    "lastUpdated": "2026-03-10",
+    "updateIntervalDays": 30,
+    "title": "Veille juridique HEP-VS",
+    "changelog": [
+      {
+        "date": "2026-03-10",
+        "author": "Tobias",
+        "notes": "Version initiale — 8 arrêts compilés, 6 documents parlementaires. Déploiement GitHub Pages."
+      }
+    ]
+  },
+  "jurisprudence": [
+    {
+      "id": "atf-151-I-337",
+      "ref": "ATF 151 I 337 — TF 2C_441/2024 & 2C_72/2024",
+      "section": "tf2025",
+      "type": "tf",
+      "date": "2025-03-25",
+      "dateDisplay": "25 mars 2025",
+      "title": "Refus de reconnaissance d'une association d'étudiants à caractère masculin (Zofingue) – Égalité des sexes prime sur liberté d'association",
+      "court": "IIe Cour de droit public",
+      "hep": "EPFL / UNIL",
+      "badges": [
+        "atf",
+        "revirement"
+      ],
+      "tags": [
+        "droits-fondamentaux",
+        "association",
+        "égalité",
+        "EPFL",
+        "UNIL"
+      ],
+      "content": "L'EPFL et l'UNIL refusent de reconnaître la Section vaudoise de la Société de Zofingue, réservée aux membres masculins. Le Tribunal fédéral opère un revirement de jurisprudence par rapport à l'ATF 140 I 201 : le principe d'égalité des sexes (art. 8 Cst.) prime sur la liberté d'association (art. 23 Cst.) lorsqu'il n'existe pas de lien objectif entre le but de l'association et l'exclusion d'un sexe.",
+      "keyPoints": [
+        "Revirement explicite de l'ATF 140 I 201",
+        "Autonomie institutionnelle des HE reconnue (art. 63a al. 3 Cst.), mais limitée par les droits fondamentaux (art. 35 al. 2 Cst.)",
+        "Conditions du revirement rappelées : motifs sérieux et objectifs",
+        "Recours de l'EPFL et de l'UNIL admis"
+      ],
+      "links": [
+        {
+          "label": "Commentaire LawInside.ch",
+          "url": "https://lawinside.ch/1591/"
+        },
+        {
+          "label": "Texte bger.ch",
+          "url": "https://www.bger.ch/ext/eurospider/live/fr/php/aza/http/index.php?highlight_docid=aza://25-03-2025-2C_441-2024&lang=fr&type=show_document"
+        }
+      ]
+    },
+    {
+      "id": "tf-2c-19-2024",
+      "ref": "TF 2C_19/2024",
+      "section": "tf2024",
+      "type": "tf",
+      "date": "2024-01-15",
+      "dateDisplay": "15 janvier 2024",
+      "title": "Notification par courrier recommandé non retiré – Délai de recours HEP",
+      "court": "IIe Cour de droit public",
+      "hep": "HEP Vaud",
+      "badges": [
+        "tf",
+        "irrecevable"
+      ],
+      "tags": [
+        "délais",
+        "notification",
+        "HEP Vaud"
+      ],
+      "content": "Le TF déclare irrecevable le recours formé contre l'arrêt du TC Vaud GE.2023.0194. Confirme la jurisprudence sur la computation des délais de recours HEP (art. 83 let. t LTF).",
+      "keyPoints": [
+        "Art. 83 let. t LTF : Irrecevabilité des recours en matière de hautes écoles (examens, études)",
+        "Confirme TC VD GE.2023.0194 : notification réputée faite après 7 jours de garde",
+        "Maladie du conjoint ne constitue pas un juste motif de restitution du délai"
+      ],
+      "links": [
+        {
+          "label": "Consulter sur bger.ch",
+          "url": "https://www.bger.ch"
+        }
+      ]
+    },
+    {
+      "id": "tf-hep-vs-2024",
+      "ref": "TF — référence à compléter ⚠️",
+      "section": "tf2024",
+      "type": "tf",
+      "date": "2024-08-06",
+      "dateDisplay": "Juillet–août 2024",
+      "title": "Admission HEP-VS – Diplômé EPFL génie civil souhaitant enseigner les mathématiques",
+      "court": "TF",
+      "hep": "HEP Valais",
+      "badges": [
+        "tf",
+        "admis"
+      ],
+      "tags": [
+        "admission",
+        "HEP Valais"
+      ],
+      "pending": true,
+      "content": "Un diplômé EPFL en génie civil souhaitait s'inscrire à la HEP-VS pour enseigner les mathématiques. Le TC Valais avait refusé l'admission. Le TF annule la décision cantonale et renvoie la cause pour nouvel examen.",
+      "keyPoints": [
+        "Critères d'admission – équivalence de crédits disciplinaires (mathématiques)",
+        "Limites du pouvoir d'appréciation de la HEP en matière d'admission",
+        "Source : Le Nouvelliste, 6.08.2024 — numéro de cause non encore confirmé, à vérifier sur bger.ch"
+      ],
+      "links": [
+        {
+          "label": "Référence à compléter sur bger.ch",
+          "url": "https://www.bger.ch"
+        }
+      ]
+    },
+    {
+      "id": "tf-2c-550-2024",
+      "ref": "TF 2C_550/2024",
+      "section": "tf2024",
+      "type": "tf",
+      "date": "2024-11-07",
+      "dateDisplay": "7 novembre 2024",
+      "title": "Exclusion définitive d'un étudiant HEP-VD – Comportement incompatible",
+      "court": "IIe Cour de droit public",
+      "hep": "HEP Vaud",
+      "badges": [
+        "tf",
+        "irrecevable"
+      ],
+      "tags": [
+        "exclusion-comportement",
+        "HEP Vaud"
+      ],
+      "content": "Recours contre un arrêt du TC vaudois (GE.2023.0237) confirmant l'exclusion définitive d'un étudiant de la HEP Vaud pour comportement incompatible avec l'exercice de la profession d'enseignant.",
+      "keyPoints": [
+        "Étudiant exclu pour dénigrement et intimidation du corps enseignant",
+        "Mise en garde préalable du directeur de formation ignorée",
+        "Art. 83 let. t LTF : décisions sur examens/évaluations non susceptibles de recours au TF",
+        "Recours déclaré irrecevable"
+      ],
+      "links": [
+        {
+          "label": "Voir arrêt cantonal (TC VD)",
+          "url": "https://entscheidsuche.ch/dok/VD_Omni/VD_TC_031_GE-2023-0237_2024-09-30.html"
+        }
+      ]
+    },
+    {
+      "id": "tc-vd-ge-2023-0237",
+      "ref": "TC VD GE.2023.0237",
+      "section": "tc2024",
+      "type": "tc",
+      "date": "2024-09-30",
+      "dateDisplay": "30 septembre 2024",
+      "title": "Exclusion HEP-VD – Comportement incompatible avec la profession enseignante",
+      "court": "CDAP",
+      "hep": "HEP Vaud",
+      "badges": [
+        "tc",
+        "rejete"
+      ],
+      "tags": [
+        "exclusion-comportement",
+        "stage",
+        "HEP Vaud"
+      ],
+      "content": "Recours contre la décision d'exclusion définitive prononcée par le Comité de direction de la HEP Vaud. L'étudiant contestait l'exclusion fondée sur son comportement jugé incompatible avec l'exercice de la profession d'enseignant.",
+      "keyPoints": [
+        "Art. 75 al. 1 let. b RLHEP : Non-conformité aux règles des lieux de stage",
+        "Art. 75 al. 1 let. c RLHEP : Comportement incompatible avec la profession",
+        "La relation de respect mutuel est fondamentale dans la formation enseignante",
+        "Pouvoir d'appréciation du Comité de direction non abusif"
+      ],
+      "links": [
+        {
+          "label": "Consulter l'arrêt complet",
+          "url": "https://entscheidsuche.ch/dok/VD_Omni/VD_TC_031_GE-2023-0237_2024-09-30.html"
+        }
+      ]
+    },
+    {
+      "id": "tc-vd-ge-2023-0194",
+      "ref": "TC VD GE.2023.0194",
+      "section": "tc2023",
+      "type": "tc",
+      "date": "2023-12-11",
+      "dateDisplay": "11 décembre 2023",
+      "title": "Notification d'un recommandé non retiré – Computation du délai de recours HEP",
+      "court": "CDAP",
+      "hep": "HEP Vaud",
+      "badges": [
+        "tc",
+        "rejete"
+      ],
+      "tags": [
+        "délais",
+        "notification",
+        "HEP Vaud"
+      ],
+      "content": "Recours contre une décision d'irrecevabilité de la Commission de recours HEP. Un envoi recommandé non distribué est réputé notifié le dernier jour du délai de garde de 7 jours. La maladie du conjoint n'est pas un juste motif de restitution du délai.",
+      "keyPoints": [
+        "Notification fiction : le recommandé non retiré est réputé notifié après 7 jours de garde",
+        "Un délai de garde plus long accordé par la poste ne prolonge pas le délai légal",
+        "Maladie d'un proche ≠ empêchement objectif si le recourant pouvait mandater un tiers"
+      ],
+      "links": [
+        {
+          "label": "Consulter l'arrêt complet",
+          "url": "https://entscheidsuche.ch/dok/VD_Omni/VD_TC_031_GE-2023-0194_2023-12-11.html"
+        }
+      ]
+    },
+    {
+      "id": "tc-vd-ge-2023-0111",
+      "ref": "TC VD GE.2023.0111",
+      "section": "tc2023",
+      "type": "tc",
+      "date": "2023-12-11",
+      "dateDisplay": "11 décembre 2023",
+      "title": "Échec définitif HEP – Évaluation d'un module de français (BP43FRA)",
+      "court": "CDAP",
+      "hep": "HEP Vaud",
+      "badges": [
+        "tc",
+        "rejete"
+      ],
+      "tags": [
+        "exclusion-examen",
+        "HEP Vaud"
+      ],
+      "content": "Recours contre l'échec définitif prononcé par la Commission de recours HEP, confirmant le second échec à l'évaluation du module BP43FRA. La recourante contestait la notation comme arbitraire et disproportionnée.",
+      "keyPoints": [
+        "Pouvoir d'appréciation large de la HEP dans l'évaluation des compétences linguistiques",
+        "La réforme in pejus (art. 89 al. 2 LPA-VD) est un pouvoir discrétionnaire, non une obligation",
+        "Les conséquences d'une reformatio doivent être exposées explicitement au recourant",
+        "Principe de célérité (art. 29 al. 1 Cst.) : délai de traitement examiné mais non violé"
+      ],
+      "links": [
+        {
+          "label": "Consulter l'arrêt complet",
+          "url": "https://entscheidsuche.ch/docs/VD_Omni/VD_TC_031_GE-2023-0111_2023-12-11.html"
+        }
+      ]
+    },
+    {
+      "id": "atf-142-I-16",
+      "ref": "ATF 142 I 16",
+      "section": "principe",
+      "type": "principe",
+      "date": "2015-01-01",
+      "dateDisplay": "Arrêt de principe",
+      "title": "Protection des appellations universitaires et HEP – Force dérogatoire du droit fédéral",
+      "court": "IIe Cour de droit public",
+      "hep": "Tessin",
+      "badges": [
+        "atf",
+        "admis"
+      ],
+      "tags": [
+        "protection-titres",
+        "LEHE"
+      ],
+      "content": "Arrêt fondamental concernant la protection de l'appellation \"haute école pédagogique\" au sens de l'art. 29 LEHE. Examen de la force dérogatoire du droit fédéral en matière de protection des titres des hautes écoles.",
+      "keyPoints": [
+        "Art. 29 LEHE : Protège les appellations \"université\", \"haute école spécialisée\" et \"haute école pédagogique\"",
+        "Les cantons peuvent prévoir des dispositions spéciales pour les appellations proches",
+        "Les termes \"campus\" et \"college\" ne bénéficient pas de la même protection",
+        "Art. 63a Cst. : régime de compétences parallèles Confédération/cantons"
+      ],
+      "links": [
+        {
+          "label": "Consulter sur bger.ch",
+          "url": "https://www.bger.ch"
+        }
+      ]
+    }
+  ],
+  "parlementaire": [
+    {
+      "id": "postulat-formation-distance",
+      "priority": "high",
+      "docType": "postulat",
+      "status": "adopte",
+      "section": "direct",
+      "title": "Formation à distance à la HEP-VS",
+      "date": "Juin 2025",
+      "authors": "NEO (Schöpfer-Pfaffen, Allenbach)",
+      "vote": "107 oui / 16 non / 1 abst.",
+      "officialUrl": "https://parlement.vs.ch",
+      "description": "Postulat proposant la création d'une filière d'enseignement à distance pour la formation des enseignants du primaire à la HEP-VS. Objectif : renforcer la compétitivité du site de Brigue face à la concurrence extra-cantonale et lutter contre la pénurie d'enseignants.",
+      "impacts": [
+        "Développement d'une offre de formation à distance pour le primaire",
+        "Renforcement de la compétitivité nationale",
+        "Ciblage des personnes avec obligations professionnelles/familiales",
+        "Réponse à la pénurie d'enseignants dans le Haut et Bas-Valais"
+      ],
+      "financial": "720'000 CHF/an (4 EPT) selon le Conseil d'État",
+      "timeline": [
+        {
+          "date": "2025-01-20",
+          "status": "Dépôt",
+          "done": true
+        },
+        {
+          "date": "2025-03-15",
+          "status": "Commission",
+          "done": true
+        },
+        {
+          "date": "2025-06-12",
+          "status": "Adopté 107/16",
+          "done": true
+        },
+        {
+          "date": "2026-06-01",
+          "status": "Réponse CE",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "leher",
+      "priority": "high",
+      "docType": "loi",
+      "status": "adopte",
+      "section": "direct",
+      "title": "LEHER — Loi sur l'encouragement des hautes écoles et de la recherche",
+      "date": "Mai 2024",
+      "authors": "Conseil d'État",
+      "vote": null,
+      "officialUrl": "https://parlement.vs.ch",
+      "description": "Loi-cadre définissant le cadre de gouvernance, surveillance et financement des hautes écoles valaisannes, incluant la HEP-VS. Modifie les contributions des communes sièges et harmonise les dispositions avec la législation fédérale (LEHE).",
+      "impacts": [
+        "Redéfinition des sites d'enseignement dans la loi de localisation",
+        "Nouvelles dispositions sur la surveillance et protection des titres",
+        "Cadre pour la protection contre discriminations et fraudes",
+        "Contribution des communes sièges réglementée"
+      ],
+      "financial": null,
+      "timeline": [
+        {
+          "date": "2024-01-10",
+          "status": "Projet CE",
+          "done": true
+        },
+        {
+          "date": "2024-03-01",
+          "status": "Commission",
+          "done": true
+        },
+        {
+          "date": "2024-04-18",
+          "status": "1er débat",
+          "done": true
+        },
+        {
+          "date": "2024-05-09",
+          "status": "Adopté",
+          "done": true
+        }
+      ]
+    },
+    {
+      "id": "luva",
+      "priority": "medium",
+      "docType": "loi",
+      "status": "adopte",
+      "section": "indirect",
+      "title": "LUVa — Loi sur l'Université du Valais",
+      "date": "Décembre 2025",
+      "authors": "Conseil d'État (DEF — C. Darbellay)",
+      "vote": "105 oui / 15 non / 2 abst.",
+      "officialUrl": "https://parlement.vs.ch",
+      "description": "Création d'une université cantonale valaisanne (Uni Valais-Wallis) à partir d'UniDistance Suisse. Première université suisse entièrement à distance et à temps partiel. Entrée en vigueur prévue 2028.",
+      "impacts": [
+        "Renforcement de l'écosystème tertiaire valaisan",
+        "Potentiel de synergie pour l'enseignement à distance",
+        "Repositionnement stratégique des hautes écoles cantonales",
+        "Modèle de référence pour la formation flexible"
+      ],
+      "financial": "37,76 → 51,12 millions CHF (contribution cantonale 9,5 → 16 millions)",
+      "timeline": [
+        {
+          "date": "2024-06-01",
+          "status": "Avant-projet",
+          "done": true
+        },
+        {
+          "date": "2025-04-10",
+          "status": "Consultation",
+          "done": true
+        },
+        {
+          "date": "2025-10-15",
+          "status": "Message CE",
+          "done": true
+        },
+        {
+          "date": "2025-11-20",
+          "status": "1er débat",
+          "done": true
+        },
+        {
+          "date": "2025-12-11",
+          "status": "Adopté 105/15",
+          "done": true
+        }
+      ]
+    },
+    {
+      "id": "postulat-reseaux-sociaux",
+      "priority": "low",
+      "docType": "postulat",
+      "status": "adopte",
+      "section": "indirect",
+      "title": "Encadrement des réseaux sociaux chez les jeunes",
+      "date": "Juin 2025",
+      "authors": "Interpartis (Dubuis PLR, Praz Verts, et al.)",
+      "vote": "110 oui / 10 non",
+      "officialUrl": "https://parlement.vs.ch",
+      "description": "Postulat demandant une législation pour protéger les jeunes des effets néfastes des réseaux sociaux. Renforcement de l'éducation aux médias dans les programmes scolaires préconisé.",
+      "impacts": [
+        "Adaptation potentielle de la formation continue des enseignants",
+        "Développement de modules sur l'éducation aux médias",
+        "Collaboration avec les services cantonaux de l'enseignement"
+      ],
+      "financial": null,
+      "timeline": [
+        {
+          "date": "2025-02-01",
+          "status": "Dépôt",
+          "done": true
+        },
+        {
+          "date": "2025-04-20",
+          "status": "Commission",
+          "done": true
+        },
+        {
+          "date": "2025-06-12",
+          "status": "Adopté 110/10",
+          "done": true
+        },
+        {
+          "date": "2026-06-01",
+          "status": "Réponse CE",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "lepriv",
+      "priority": "info",
+      "docType": "projet",
+      "status": "encours",
+      "section": "indirect",
+      "title": "LEPriv — Loi sur l'enseignement privé",
+      "date": "Juin 2025 (préavis)",
+      "authors": "Conseil d'État",
+      "vote": null,
+      "officialUrl": "https://parlement.vs.ch",
+      "description": "Nouveau cadre légal pour l'enseignement privé sur le territoire valaisan, du primaire au tertiaire. Fait référence à la LEHER pour les dispositions relatives aux hautes écoles.",
+      "impacts": [
+        "Clarification du paysage éducatif cantonal",
+        "Articulation avec les formations publiques"
+      ],
+      "financial": null,
+      "timeline": [
+        {
+          "date": "2024-09-01",
+          "status": "Avant-projet",
+          "done": true
+        },
+        {
+          "date": "2025-02-15",
+          "status": "Consultation",
+          "done": true
+        },
+        {
+          "date": "2025-06-01",
+          "status": "Préavis CE",
+          "done": true
+        },
+        {
+          "date": "2026-03-01",
+          "status": "Commission",
+          "done": false
+        },
+        {
+          "date": "2026-06-01",
+          "status": "Débat",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "accreditation",
+      "priority": "info",
+      "docType": "accreditation",
+      "status": "adopte",
+      "section": "contexte",
+      "title": "Accréditation institutionnelle HEP-VS",
+      "date": "2022 (valide jusqu'en 2029)",
+      "authors": "Conseil suisse d'accréditation (CSA)",
+      "vote": null,
+      "officialUrl": "https://www.akkreditierungsrat.ch",
+      "description": "La HEP-VS a obtenu l'accréditation institutionnelle selon la LEHE, certifiant la qualité de l'enseignement, de la recherche et des prestations de service.",
+      "impacts": [
+        "Institution à l'écoute de la société et du paysage éducatif cantonal",
+        "Bilinguisme comme atout distinctif",
+        "Organisation apprenante orientée amélioration continue",
+        "Reconnaissance en tant qu'institution de niveau tertiaire"
+      ],
+      "financial": null,
+      "timeline": [
+        {
+          "date": "2021-01-01",
+          "status": "Autoévaluation",
+          "done": true
+        },
+        {
+          "date": "2021-10-01",
+          "status": "Visite d'experts",
+          "done": true
+        },
+        {
+          "date": "2022-05-01",
+          "status": "Accréditation ✓",
+          "done": true
+        },
+        {
+          "date": "2029-01-01",
+          "status": "Renouvellement",
+          "done": false
+        }
+      ]
+    }
+  ]
+}
