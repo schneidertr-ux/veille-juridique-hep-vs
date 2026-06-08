@@ -544,9 +544,14 @@
     @media print {
       .site-header, .tab-nav-wrap, .quick-actions, .filter-bar, .card-actions,
       .priority-bar, .settings-panel, .update-banner, #toast, .modal-overlay,
-      .hdr-btn, #offline-banner, .sec-btn, .btn-add-section { display: none !important; }
+      .hdr-btn, #offline-banner, .sec-btn, .btn-add-section,
+      .sub-tab-nav, .news-source-filters, .veille-panel, #print-hide { display: none !important; }
       body { background: #fff !important; color: #000 !important; font-size: 11pt; }
-      .tab-pane { display: block !important; }
+      .tab-pane { display: none !important; }
+      .tab-pane.active { display: block !important; }
+      .sub-tab-pane { display: none !important; }
+      .sub-tab-pane.active { display: block !important; }
+      #print-header { display: block !important; border-bottom: 2px solid #C8102E; margin-bottom: 1rem; padding-bottom: .5rem; }
       main { padding: 0; }
       .container { max-width: 100%; padding: 0; }
       .arret-card, .document-card { background: #fff !important; box-shadow: none !important; border: 1px solid #ccc !important; border-left: 3px solid #999 !important; break-inside: avoid; transform: none !important; page-break-inside: avoid; }
@@ -586,7 +591,8 @@
       <div class="header-actions" role="toolbar" aria-label="Actions">
         <button class="hdr-btn" onclick="toggleSettings()" aria-expanded="false" id="btn-settings">⚙️ GitHub</button>
         <button class="hdr-btn" onclick="openChangelogModal()" aria-label="Historique des mises à jour">📝 Historique</button>
-        <button class="hdr-btn" onclick="printPage()" aria-label="Imprimer">🖨️ Imprimer</button>
+        <button class="hdr-btn" onclick="toggleGlobalSearch()" aria-label="Recherche globale" id="btn-global-search" title="Recherche dans toute la compilation (Ctrl+K)">🔎 Recherche</button>
+        <button class="hdr-btn" onclick="exportPDF()" aria-label="Exporter en PDF">📄 Export PDF</button>
         <button class="hdr-btn" onclick="exportJSON()" aria-label="Exporter data.json">⬇️ JSON</button>
         <button class="hdr-btn accent" id="btn-push" onclick="pushToGitHub()" aria-label="Publier sur GitHub" style="display:none">☁️ Publier</button>
       </div>
@@ -616,6 +622,27 @@
       <button class="action-btn secondary" onclick="toggleSettings()">Fermer</button>
     </div>
   </div>
+</div>
+
+<!-- ══ PRINT HEADER (caché à l'écran, visible à l'impression) ══ -->
+<div id="print-header" style="display:none;padding:1rem 0">
+  <div style="display:flex;align-items:center;gap:1rem">
+    <span style="background:#C8102E;color:#fff;font-weight:900;font-size:1.1rem;padding:.3rem .7rem;border-radius:4px">HEP-VS</span>
+    <span style="font-size:1.1rem;font-weight:700;color:#1E2B3C">Veille juridique</span>
+  </div>
+  <div id="print-subtitle" style="font-size:.8rem;color:#666;margin-top:.25rem"></div>
+</div>
+
+<!-- ══ RECHERCHE GLOBALE ══ -->
+<div id="global-search-bar" style="display:none;position:sticky;top:60px;z-index:200;background:var(--navy);padding:.6rem 0;box-shadow:0 4px 12px rgba(0,0,0,.2)">
+  <div class="container" style="display:flex;gap:.5rem;align-items:center">
+    <span style="color:#fff;font-size:.85rem;white-space:nowrap">🔎 Recherche globale</span>
+    <input type="search" id="global-search-input" placeholder="Rechercher dans jurisprudence, parlement, FNS…"
+      style="flex:1;padding:.45rem .8rem;border:none;border-radius:var(--radius);font-size:.88rem;font-family:inherit;outline:none"
+      oninput="runGlobalSearch(this.value)" autocomplete="off" />
+    <button onclick="toggleGlobalSearch()" style="background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;padding:.2rem .5rem" aria-label="Fermer">✕</button>
+  </div>
+  <div id="global-search-results" class="container" style="max-height:55vh;overflow-y:auto;padding-top:.5rem"></div>
 </div>
 
 <!-- ══ MAIN ══ -->
@@ -762,7 +789,17 @@
           </div>
         </div>
         <div id="snf-status" style="font-size:.78rem;color:var(--text-muted);margin:.5rem 0;min-height:1em" aria-live="polite"></div>
-        <!-- Données pré-chargées depuis data.json (alimentées par GitHub Actions) -->
+        <!-- Tri + données pré-chargées -->
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap" id="snf-sort-bar">
+          <span style="font-size:.78rem;color:var(--text-muted)">Trier par :</span>
+          <select id="snf-sort" onchange="sortSnfResults()" style="font-size:.8rem;padding:.25rem .6rem;border:1.5px solid var(--border-mid);border-radius:5px;font-family:inherit">
+            <option value="date-desc">Date ↓ (récent)</option>
+            <option value="date-asc">Date ↑ (ancien)</option>
+            <option value="montant-desc">Montant ↓</option>
+            <option value="montant-asc">Montant ↑</option>
+            <option value="alpha">Titre A→Z</option>
+          </select>
+        </div>
         <div id="snf-preloaded" style="margin-bottom:1rem"></div>
         <div id="snf-results"></div>
       </div>
@@ -1244,6 +1281,7 @@ function renderDocCard(d) {
   const statusHtml = d.status==='adopte'
     ? `<span class="status-badge status-adopte">✓ Adopté${d.docType==='loi'?'e':''}</span>`
     : `<span class="status-badge status-encours">En cours</span>`;
+  const newBadge = isNew(d.date) ? `<span class="badge badge-new" title="Ajouté dans les 30 derniers jours">NOUVEAU</span>` : '';
   const impacts = (d.impacts||[]).map(i=>`<li>${esc(i)}</li>`).join('');
   const prioLabels = {high:'🔴 Élevé', medium:'🟠 Moyen', low:'🟢 Indirect', info:'🔵 Info'};
   const prioBar = Object.entries(prioLabels).map(([p,label]) =>
@@ -1256,6 +1294,7 @@ function renderDocCard(d) {
       <div style="display:flex;gap:.35rem;flex-wrap:wrap;align-items:center">
         <span class="doc-type-badge ${typeClass}">${esc(d.docType||'')}</span>
         ${statusHtml}
+        ${newBadge}
       </div>
     </div>
     <div class="doc-title">${esc(d.title)}</div>
@@ -2209,6 +2248,135 @@ function printPage() {
   window.print();
 }
 
+// ════════════════════════════════════════════════════════
+// FEATURE 1 — EXPORT PDF
+// ════════════════════════════════════════════════════════
+function exportPDF() {
+  // Expand all collapsibles
+  document.querySelectorAll('.collapsible.collapsed').forEach(el=>el.classList.remove('collapsed'));
+  document.querySelectorAll('.collapsible-content.collapsed').forEach(el=>el.classList.remove('collapsed'));
+  // Build print subtitle
+  const tabLabels = { juri:'Compilation jurisprudentielle', veille:'Veille live', sources:'Sources nationales', parl:'Suivi parlementaire' };
+  const active = document.querySelector('.tab-pane.active');
+  const tabId = active ? active.id.replace('tab-','') : '';
+  const subtitle = document.getElementById('print-subtitle');
+  if (subtitle) subtitle.textContent = (tabLabels[tabId]||'') + ' — ' + new Date().toLocaleDateString('fr-CH', {year:'numeric',month:'long',day:'numeric'});
+  // Show active sub-tab content too
+  document.querySelectorAll('.sub-tab-pane').forEach(el=>el.classList.remove('active'));
+  document.querySelector('.sub-tab-pane.active') || document.querySelectorAll('.sub-tab-pane')[0]?.classList.add('active');
+  window.print();
+  toast('📄 Impression lancée — utilisez "Enregistrer en PDF" dans la boîte d\'impression.','success');
+}
+
+// ════════════════════════════════════════════════════════
+// FEATURE 3 — RECHERCHE GLOBALE
+// ════════════════════════════════════════════════════════
+let _globalSearchOpen = false;
+
+function toggleGlobalSearch() {
+  _globalSearchOpen = !_globalSearchOpen;
+  const bar = document.getElementById('global-search-bar');
+  bar.style.display = _globalSearchOpen ? 'block' : 'none';
+  if (_globalSearchOpen) {
+    const inp = document.getElementById('global-search-input');
+    inp.value = ''; inp.focus();
+    document.getElementById('global-search-results').innerHTML =
+      '<div style="color:rgba(255,255,255,.6);font-size:.8rem;padding:.5rem">Tapez pour rechercher dans toute la compilation…</div>';
+  }
+}
+
+function runGlobalSearch(q) {
+  const el = document.getElementById('global-search-results');
+  if (!q || q.length < 2) {
+    el.innerHTML = '<div style="color:rgba(255,255,255,.6);font-size:.8rem;padding:.5rem">Tapez au moins 2 caractères…</div>';
+    return;
+  }
+  const lq = q.toLowerCase();
+  const results = [];
+
+  // Jurisprudence
+  (appData.jurisprudence||[]).forEach(a => {
+    const hay = [a.ref,a.title,a.content,...(a.keyPoints||[]),...(a.tags||[])].join(' ').toLowerCase();
+    if (hay.includes(lq)) results.push({ type:'juri', icon:'⚖️', label: a.ref||a.title, sub: a.title, id: a.id, tab:'juri' });
+  });
+
+  // Parlementaire
+  (appData.parlementaire||[]).forEach(d => {
+    const hay = [d.title,d.description,...(d.impacts||[])].join(' ').toLowerCase();
+    if (hay.includes(lq)) results.push({ type:'parl', icon:'📜', label: d.title, sub: d.docType, id: d.id, tab:'parl' });
+  });
+
+  // Sources nationales FNS
+  (appData.sources_nationales||[]).forEach(s => {
+    const hay = [s.titre,s.description,s.responsable,s.institution].join(' ').toLowerCase();
+    if (hay.includes(lq)) results.push({ type:'fns', icon:'🔬', label: s.titre, sub: 'FNS / SNSF', id: s.id, tab:'sources' });
+  });
+
+  if (!results.length) {
+    el.innerHTML = '<div style="color:rgba(255,255,255,.6);font-size:.8rem;padding:.5rem">Aucun résultat pour «&nbsp;' + esc(q) + '&nbsp;»</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div style="color:rgba(255,255,255,.5);font-size:.72rem;padding:.25rem .1rem .4rem">${results.length} résultat(s)</div>
+    ${results.slice(0,12).map(r => `
+    <div onclick="goToResult('${r.tab}','${esc(r.id)}')"
+      style="display:flex;gap:.6rem;align-items:flex-start;padding:.45rem .6rem;border-radius:5px;cursor:pointer;margin-bottom:2px;transition:background .1s"
+      onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background=''">
+      <span style="font-size:1rem;min-width:1.3rem">${r.icon}</span>
+      <div>
+        <div style="font-size:.82rem;color:#fff;font-weight:600;line-height:1.3">${esc(r.label||'').slice(0,80)}</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.55)">${esc(r.sub||'')}</div>
+      </div>
+    </div>`).join('')}
+    ${results.length > 12 ? `<div style="font-size:.72rem;color:rgba(255,255,255,.4);padding:.25rem .6rem">…et ${results.length-12} autres</div>` : ''}`;
+}
+
+function goToResult(tab, id) {
+  toggleGlobalSearch();
+  switchTab(tab);
+  setTimeout(() => {
+    const el = document.getElementById('card-'+id) || document.getElementById('doc-'+id);
+    if (el) { el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.outline='3px solid var(--red)'; setTimeout(()=>el.style.outline='',2000); }
+  }, 200);
+}
+
+// ════════════════════════════════════════════════════════
+// FEATURE 4 — TRI FNS
+// ════════════════════════════════════════════════════════
+function sortSnfResults() {
+  const sort = document.getElementById('snf-sort')?.value || 'date-desc';
+  const el = document.getElementById('snf-preloaded');
+  if (!el) return;
+  let items = (appData.sources_nationales||[]).filter(x=>x.source==='fns');
+  if (sort === 'date-desc') items = items.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  else if (sort === 'date-asc') items = items.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  else if (sort === 'montant-desc') items = items.sort((a,b)=>Number(b.montant||0)-Number(a.montant||0));
+  else if (sort === 'montant-asc') items = items.sort((a,b)=>Number(a.montant||0)-Number(b.montant||0));
+  else if (sort === 'alpha') items = items.sort((a,b)=>(a.titre||'').localeCompare(b.titre||'','fr'));
+  if (!items.length) return;
+  el.innerHTML = `
+    <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:.5rem">
+      📦 <strong>${items.length} projet(s) FNS</strong> issus de la dernière mise à jour automatique
+    </div>
+    ${items.map(g => `
+    <div class="vcard" style="border-left-color:var(--navy)">
+      <div class="vcard-header">
+        <span class="vcard-court" style="background:var(--navy);color:#fff">FNS</span>
+        <span class="vcard-date">${esc(g.date||'')}</span>
+      </div>
+      <div class="vcard-title">${esc(g.titre||'')}</div>
+      <div style="font-size:.78rem;color:var(--text-sec);margin-bottom:.35rem">
+        ${g.responsable?'👤 '+esc(g.responsable)+' · ':''}
+        ${g.institution?'🏛️ '+esc(g.institution):''}
+        ${g.montant?' · 💰 CHF '+Number(g.montant).toLocaleString('fr-CH'):''}
+      </div>
+      <div class="vcard-actions">
+        <a href="${esc(g.url||'https://data.snf.ch')}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
+      </div>
+    </div>`).join('')}`;
+}
+
 function exportJSON() {
   const json = JSON.stringify(appData, null, 2);
   const blob = new Blob([json],{type:'application/json'});
@@ -2437,22 +2605,8 @@ function renderSnfPreloaded() {
     el.innerHTML = '<div class="alert alert-info" style="font-size:.8rem">Aucune donnée FNS pré-chargée. Le workflow GitHub Actions alimentera cette section chaque lundi.</div>';
     return;
   }
-  el.innerHTML = `
-    <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:.5rem">
-      📦 <strong>${items.length} projet(s) FNS</strong> issus de la dernière mise à jour automatique
-    </div>
-    ${items.map(g => `
-    <div class="vcard" style="border-left-color:var(--navy)">
-      <div class="vcard-header">
-        <span class="vcard-court" style="background:var(--navy);color:#fff">FNS</span>
-        <span class="vcard-date">${esc(g.date||'')}</span>
-      </div>
-      <div class="vcard-title">${esc(g.titre||'')}</div>
-      <div style="font-size:.78rem;color:var(--text-sec);margin-bottom:.35rem">${esc(g.description||'')}</div>
-      <div class="vcard-actions">
-        <a href="${esc(g.url||'https://data.snf.ch')}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
-      </div>
-    </div>`).join('')}`;
+  // Delegate to sortSnfResults which handles rendering
+  sortSnfResults();
 }
 
 async function veilleSnsfSearch() {
@@ -2666,6 +2820,11 @@ document.addEventListener('keydown', e => {
   }
 });
 document.getElementById('v-keyword').addEventListener('keydown', e => { if(e.key==='Enter') veilleSearch(); });
+// Ctrl+K → recherche globale
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key==='k') { e.preventDefault(); toggleGlobalSearch(); }
+  if (e.key==='Escape' && _globalSearchOpen) toggleGlobalSearch();
+});
 document.getElementById('snf-keyword').addEventListener('keydown', e => { if(e.key==='Enter') veilleSnsfSearch(); });
 document.getElementById('news-keyword').addEventListener('keydown', e => { if(e.key==='Enter') refreshAllNews(); });
 document.getElementById('search-input').addEventListener('keydown', e => { if(e.key==='Escape') clearFilters(); });

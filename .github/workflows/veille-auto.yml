@@ -8,6 +8,9 @@ on:
 jobs:
   update-veille:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
     steps:
       - name: Checkout du dépôt
         uses: actions/checkout@v4
@@ -149,9 +152,56 @@ jobs:
           EOF
 
       - name: Commit et push si changements
+        id: commit
         run: |
           git config user.name "veille-bot"
           git config user.email "veille-bot@users.noreply.github.com"
           git add data.json
-          git diff --staged --quiet || git commit -m "chore: mise à jour automatique veille — $(date +%Y-%m-%d)"
-          git push
+          if git diff --staged --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "chore: mise à jour automatique veille — $(date +%Y-%m-%d)"
+            git push
+            echo "changed=true" >> $GITHUB_OUTPUT
+            # Compter les nouveaux éléments
+            COUNT=$(node -e "
+              const d=JSON.parse(require('fs').readFileSync('data.json'));
+              const today=new Date().toISOString().slice(0,10);
+              const newFns=(d.sources_nationales||[]).filter(x=>x.source==='fns'&&x.date>=today.slice(0,7)).length;
+              const newParl=(d.parlementaire||[]).filter(x=>x.id&&x.id.startsWith('parl-')).length;
+              console.log(newFns+newParl);
+            " 2>/dev/null || echo "0")
+            echo "count=$COUNT" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Créer une issue de notification si nouvelles entrées
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toLocaleDateString('fr-CH', {year:'numeric',month:'long',day:'numeric'});
+            const url = `https://${context.repo.owner}.github.io/${context.repo.repo}/`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔔 Veille juridique — Nouvelles entrées (${date})`,
+              body: [
+                '## Mise à jour automatique de la veille juridique HEP-VS',
+                '',
+                `Date : **${date}**`,
+                '',
+                '### Sources interrogées',
+                '- 🔬 **FNS / SNSF** — `data.snf.ch`',
+                '- 📜 **Parlement VS** — `parlement.vs.ch`',
+                '',
+                '### Action requise',
+                `Consultez la compilation mise à jour : [${url}](${url})`,
+                '',
+                `Vérifiez les nouvelles entrées et ajustez leur priorité si nécessaire.`,
+                '',
+                '---',
+                '_Issue créée automatiquement par le workflow `veille-auto.yml`_',
+                '_Fermez cette issue après vérification._'
+              ].join('\n'),
+              labels: ['veille-auto', 'à-vérifier']
+            });
