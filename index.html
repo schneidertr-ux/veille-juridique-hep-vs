@@ -162,6 +162,43 @@
     .tab-pane { display: none; padding-top: 1.25rem; }
     .tab-pane.active { display: block; }
 
+    /* ══ SOUS-ONGLETS (Sources nationales) ══ */
+    .sub-tab-nav { display: flex; gap: .5rem; margin-bottom: 1.1rem; border-bottom: 2px solid var(--border); }
+    .sub-tab-btn {
+      padding: .55rem 1.1rem; border: none; border-bottom: 3px solid transparent;
+      background: transparent; color: var(--text-muted); font-size: .85rem;
+      font-family: inherit; font-weight: 500; cursor: pointer;
+      transition: color .15s, border-color .15s; margin-bottom: -2px;
+      white-space: nowrap; border-radius: 4px 4px 0 0;
+    }
+    .sub-tab-btn:hover { color: var(--text); background: var(--bg-alt); }
+    .sub-tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 700; background: transparent; }
+    .sub-tab-pane { display: none; }
+    .sub-tab-pane.active { display: block; }
+    .news-card {
+      background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: .85rem 1rem; margin-bottom: .75rem;
+      box-shadow: var(--shadow-sm); transition: box-shadow .15s;
+    }
+    .news-card:hover { box-shadow: var(--shadow-md); }
+    .news-card-source {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-size: .7rem; font-weight: 700; padding: .15rem .55rem;
+      border-radius: 3px; margin-bottom: .4rem;
+    }
+    .news-card-source.swuni { background: #EFF6FF; color: #1D4ED8; }
+    .news-card-source.inno  { background: #F0FDF4; color: #15803D; }
+    .news-card-title { font-size: .9rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; line-height: 1.4; }
+    .news-card-desc  { font-size: .78rem; color: var(--text-sec); margin-bottom: .45rem; line-height: 1.5; }
+    .news-card-footer { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+    .news-source-filters { display: flex; gap: .5rem; margin-bottom: .9rem; flex-wrap: wrap; }
+    .news-filter-chip {
+      padding: .25rem .75rem; border-radius: 20px; border: 1.5px solid var(--border-mid);
+      background: var(--bg-card); color: var(--text-sec); font-size: .78rem;
+      cursor: pointer; font-family: inherit; transition: all .13s;
+    }
+    .news-filter-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
     /* ══ SECTION TITLES ══ */
     .section-head {
       display: flex; align-items: center; justify-content: space-between;
@@ -689,45 +726,70 @@
     <!-- ══ TAB SOURCES NATIONALES ══ -->
     <div id="tab-sources" class="tab-pane" role="tabpanel" aria-labelledby="btn-tab-sources">
 
-      <!-- FNS / SNSF -->
-      <div class="veille-panel">
-        <div class="section-head" style="margin-top:0;margin-bottom:.75rem">
-          <h2 class="section-title">🔬 FNS / SNSF — data.snf.ch</h2>
-        </div>
-        <div class="search-row">
-          <div class="vf grow"><label for="snf-keyword">Mot-clé</label><input type="text" id="snf-keyword" value="HEP formation enseignants" /></div>
-          <div class="vf"><label for="snf-type">Type</label>
-            <select id="snf-type" style="width:200px">
-              <option value="">Tous les projets</option>
-              <option value="active">Projets actifs</option>
-              <option value="completed">Projets terminés</option>
-            </select>
-          </div>
-          <div class="vf"><label for="snf-discipline">Discipline</label>
-            <select id="snf-discipline" style="width:200px">
-              <option value="">Toutes</option>
-              <option value="education">Sciences de l'éducation</option>
-              <option value="pedagogy">Pédagogie</option>
-            </select>
-          </div>
-          <button id="snf-search-btn" style="padding:.5rem 1.2rem;background:var(--red);border:none;border-radius:var(--radius);color:#fff;font-size:.88rem;font-family:inherit;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s" onclick="veilleSnsfSearch()">🔍 Rechercher</button>
-        </div>
-      </div>
-      <div id="snf-status" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem;min-height:1em" aria-live="polite"></div>
-      <div id="snf-results"></div>
+      <!-- Sous-navigation -->
+      <nav class="sub-tab-nav" role="tablist" aria-label="Sources nationales">
+        <button class="sub-tab-btn active" role="tab" aria-selected="true"  id="btn-src-recherche" onclick="switchSourceTab('recherche')">🔍 Recherche FNS</button>
+        <button class="sub-tab-btn"        role="tab" aria-selected="false" id="btn-src-news"      onclick="switchSourceTab('news')">📰 News</button>
+      </nav>
 
-      <!-- swissuniversities -->
-      <div class="veille-panel" style="margin-top:1.25rem">
-        <div class="section-head" style="margin-top:0;margin-bottom:.75rem">
-          <h2 class="section-title">🏛️ swissuniversities.ch</h2>
+      <!-- ── Panneau 1 : Recherche FNS ── -->
+      <div id="src-recherche" class="sub-tab-pane active">
+        <div class="info-box" style="margin-bottom:1rem">
+          <h3>🔬 Recherche — FNS / SNSF</h3>
+          <p>Interrogez la base de données des projets subventionnés par le Fonds national suisse (<code>data.snf.ch</code>). Filtrez par mot-clé, statut ou discipline, et importez les projets pertinents dans la compilation.</p>
         </div>
-        <div class="search-row">
-          <div class="vf grow"><label for="swuni-keyword">Mot-clé</label><input type="text" id="swuni-keyword" value="HEP-VS formation enseignants" /></div>
-          <button id="swuni-search-btn" style="padding:.5rem 1.2rem;background:var(--red);border:none;border-radius:var(--radius);color:#fff;font-size:.88rem;font-family:inherit;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s" onclick="veilleSwissUniSearch()">🔍 Rechercher</button>
+        <div class="veille-panel">
+          <div class="search-row">
+            <div class="vf grow"><label for="snf-keyword">Mot-clé</label><input type="text" id="snf-keyword" value="HEP formation enseignants" placeholder="ex: HEP, pédagogie, Wallis…" /></div>
+            <div class="vf"><label for="snf-type">Statut</label>
+              <select id="snf-type" style="width:185px">
+                <option value="">Tous les projets</option>
+                <option value="active">Projets actifs</option>
+                <option value="completed">Projets terminés</option>
+              </select>
+            </div>
+            <div class="vf"><label for="snf-discipline">Discipline</label>
+              <select id="snf-discipline" style="width:185px">
+                <option value="">Toutes</option>
+                <option value="education">Sciences de l'éducation</option>
+                <option value="pedagogy">Pédagogie</option>
+              </select>
+            </div>
+            <button id="snf-search-btn" class="action-btn primary" onclick="veilleSnsfSearch()">🔍 Rechercher</button>
+          </div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:.4rem">Source : <a href="https://data.snf.ch" target="_blank" rel="noreferrer">data.snf.ch</a> — API REST publique</div>
+        </div>
+        <div id="snf-status" style="font-size:.78rem;color:var(--text-muted);margin:.5rem 0;min-height:1em" aria-live="polite"></div>
+        <div id="snf-results"></div>
+      </div>
+
+      <!-- ── Panneau 2 : News (swissuniversities + Innosuisse) ── -->
+      <div id="src-news" class="sub-tab-pane">
+        <div class="info-box" style="margin-bottom:1rem">
+          <h3>📰 News — swissuniversities &amp; Innosuisse</h3>
+          <p>Actualités, directives et appels à projets de swissuniversities.ch et d'Innosuisse pertinents pour la HEP-VS. Cliquez "Actualiser" pour charger les dernières publications.</p>
+        </div>
+
+        <!-- Filtres sources -->
+        <div class="news-source-filters">
+          <button class="news-filter-chip active" id="chip-all"   onclick="filterNewsChip('all')">Toutes les sources</button>
+          <button class="news-filter-chip"        id="chip-swuni" onclick="filterNewsChip('swuni')">🏛️ swissuniversities</button>
+          <button class="news-filter-chip"        id="chip-inno"  onclick="filterNewsChip('inno')">💡 Innosuisse</button>
+        </div>
+
+        <!-- Barre de recherche + bouton actualiser -->
+        <div class="veille-panel">
+          <div class="search-row">
+            <div class="vf grow"><label for="news-keyword">Mot-clé (optionnel)</label><input type="text" id="news-keyword" placeholder="ex: HEP, pédagogie, formation, accréditation…" /></div>
+            <button id="news-refresh-btn" class="action-btn primary" onclick="refreshAllNews()">🔄 Actualiser</button>
+          </div>
+        </div>
+
+        <div id="news-status" style="font-size:.78rem;color:var(--text-muted);margin:.5rem 0;min-height:1em" aria-live="polite"></div>
+        <div id="news-results">
+          <div class="empty-state">Cliquez "Actualiser" pour charger les actualités de swissuniversities.ch et Innosuisse.<br><small>Les données sont récupérées via proxy CORS.</small></div>
         </div>
       </div>
-      <div id="swuni-status" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem;min-height:1em" aria-live="polite"></div>
-      <div id="swuni-results"></div>
 
     </div>
 
@@ -2191,6 +2253,152 @@ function downloadGHAction() {
 }
 
 // ════════════════════════════════════════════════════════
+// SOUS-ONGLETS SOURCES NATIONALES
+// ════════════════════════════════════════════════════════
+function switchSourceTab(name) {
+  ['recherche','news'].forEach(n => {
+    document.getElementById('src-' + n).classList.toggle('active', n === name);
+    const btn = document.getElementById('btn-src-' + n);
+    if (btn) { btn.classList.toggle('active', n === name); btn.setAttribute('aria-selected', n === name); }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// NEWS — swissuniversities + Innosuisse
+// ════════════════════════════════════════════════════════
+let _newsItems = [];
+let _newsActiveChip = 'all';
+
+function filterNewsChip(chip) {
+  _newsActiveChip = chip;
+  ['all','swuni','inno'].forEach(c => {
+    const el = document.getElementById('chip-' + c);
+    if (el) el.classList.toggle('active', c === chip);
+  });
+  renderNewsResults();
+}
+
+function renderNewsResults() {
+  const keyword = (document.getElementById('news-keyword').value || '').toLowerCase();
+  const resultsEl = document.getElementById('news-results');
+  let items = _newsItems;
+  if (_newsActiveChip !== 'all') items = items.filter(n => n.source === _newsActiveChip);
+  if (keyword) items = items.filter(n =>
+    (n.title + ' ' + n.desc).toLowerCase().includes(keyword)
+  );
+  if (!items.length) {
+    resultsEl.innerHTML = '<div class="empty-state">Aucune actualité correspondante.</div>';
+    return;
+  }
+  resultsEl.innerHTML = items.map(n => `
+    <div class="news-card" data-source="${esc(n.source)}">
+      <span class="news-card-source ${n.source}">${n.source === 'swuni' ? '🏛️ swissuniversities' : '💡 Innosuisse'}</span>
+      ${n.date ? `<span style="font-size:.72rem;color:var(--text-muted);margin-left:.5rem">${esc(n.date)}</span>` : ''}
+      <div class="news-card-title">${esc(n.title)}</div>
+      ${n.desc ? `<div class="news-card-desc">${esc(n.desc)}</div>` : ''}
+      <div class="news-card-footer">
+        <a href="${esc(n.url)}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 Lire</a>
+      </div>
+    </div>`).join('');
+}
+
+async function fetchSwissUniNews(keyword) {
+  const proxy = getVParlProxy();
+  const baseUrl = 'https://www.swissuniversities.ch/fr/recherche?tx_solr%5Bq%5D=' + encodeURIComponent(keyword || 'HEP formation enseignants');
+  const url = proxy ? proxy + encodeURIComponent(baseUrl) : baseUrl;
+  const res = await fetch(url);
+  const html = await res.text();
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const items = [];
+  const candidates = doc.querySelectorAll(
+    '.search-result, .result-item, article, .news-item, .tx-solr-result, [class*="result"]'
+  );
+  (candidates.length ? candidates : doc.querySelectorAll('li,div')).forEach(el => {
+    const titleEl = el.querySelector('h2,h3,h4,.title,a');
+    const descEl  = el.querySelector('p,.description,.snippet,.teaser');
+    const linkEl  = el.querySelector('a[href]');
+    const title = (titleEl?.textContent || '').trim();
+    if (!title || title.length < 10) return;
+    const href = linkEl?.getAttribute('href') || '';
+    const absUrl = href.startsWith('http') ? href : ('https://www.swissuniversities.ch' + href);
+    items.push({
+      source: 'swuni',
+      title,
+      desc: (descEl?.textContent || '').trim().slice(0, 250),
+      url: absUrl,
+      date: ''
+    });
+  });
+  return items.slice(0, 20);
+}
+
+async function fetchInnosuisseNews(keyword) {
+  const proxy = getVParlProxy();
+  const baseUrl = 'https://www.innosuisse.admin.ch/fr/news' + (keyword ? '?search=' + encodeURIComponent(keyword) : '');
+  const url = proxy ? proxy + encodeURIComponent(baseUrl) : baseUrl;
+  const res = await fetch(url);
+  const html = await res.text();
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const items = [];
+  const candidates = doc.querySelectorAll(
+    'article, .news-item, .card, [class*="news"], [class*="article"], .teaser'
+  );
+  (candidates.length ? candidates : doc.querySelectorAll('li')).forEach(el => {
+    const titleEl = el.querySelector('h2,h3,h4,.title,a');
+    const descEl  = el.querySelector('p,.description,.lead,.teaser-text');
+    const linkEl  = el.querySelector('a[href]');
+    const dateEl  = el.querySelector('time,[class*="date"]');
+    const title = (titleEl?.textContent || '').trim();
+    if (!title || title.length < 10) return;
+    const href = linkEl?.getAttribute('href') || '';
+    const absUrl = href.startsWith('http') ? href : ('https://www.innosuisse.admin.ch' + href);
+    items.push({
+      source: 'inno',
+      title,
+      desc: (descEl?.textContent || '').trim().slice(0, 250),
+      url: absUrl,
+      date: (dateEl?.getAttribute('datetime') || dateEl?.textContent || '').trim().slice(0, 20)
+    });
+  });
+  return items.slice(0, 20);
+}
+
+async function refreshAllNews() {
+  const btn = document.getElementById('news-refresh-btn');
+  const statusEl = document.getElementById('news-status');
+  const keyword = document.getElementById('news-keyword').value.trim();
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Chargement…';
+  statusEl.textContent = 'Récupération en cours…';
+  _newsItems = [];
+
+  const results = await Promise.allSettled([
+    fetchSwissUniNews(keyword),
+    fetchInnosuisseNews(keyword)
+  ]);
+
+  if (results[0].status === 'fulfilled') _newsItems.push(...results[0].value);
+  else statusEl.innerHTML += ' <span style="color:var(--warn)">swissuniversities: ' + esc(results[0].reason?.message || 'erreur') + '</span>';
+
+  if (results[1].status === 'fulfilled') _newsItems.push(...results[1].value);
+  else statusEl.innerHTML += ' <span style="color:var(--warn)">Innosuisse: ' + esc(results[1].reason?.message || 'erreur') + '</span>';
+
+  const swCount = _newsItems.filter(n => n.source === 'swuni').length;
+  const inCount = _newsItems.filter(n => n.source === 'inno').length;
+  statusEl.textContent = `${_newsItems.length} actualité(s) — ${swCount} swissuniversities · ${inCount} Innosuisse`;
+
+  if (!_newsItems.length) {
+    document.getElementById('news-results').innerHTML =
+      `<div class="alert alert-info">Aucun contenu récupéré (CORS bloqué ?). Configurez un proxy dans Parlement → Configuration proxy, puis réessayez.<br>
+      <a href="https://www.swissuniversities.ch/fr/recherche" target="_blank" rel="noreferrer">swissuniversities.ch</a> ·
+      <a href="https://www.innosuisse.admin.ch/fr/news" target="_blank" rel="noreferrer">innosuisse.admin.ch</a></div>`;
+  } else {
+    renderNewsResults();
+  }
+
+  btn.disabled = false; btn.innerHTML = '🔄 Actualiser';
+}
+
+// ════════════════════════════════════════════════════════
 // SOURCES NATIONALES — FNS / SNSF
 // ════════════════════════════════════════════════════════
 async function veilleSnsfSearch() {
@@ -2400,6 +2608,8 @@ document.addEventListener('keydown', e => {
   }
 });
 document.getElementById('v-keyword').addEventListener('keydown', e => { if(e.key==='Enter') veilleSearch(); });
+document.getElementById('snf-keyword').addEventListener('keydown', e => { if(e.key==='Enter') veilleSnsfSearch(); });
+document.getElementById('news-keyword').addEventListener('keydown', e => { if(e.key==='Enter') refreshAllNews(); });
 document.getElementById('search-input').addEventListener('keydown', e => { if(e.key==='Escape') clearFilters(); });
 // Modal backdrop close
 document.getElementById('editModal').addEventListener('click',    e=>{if(e.target===e.currentTarget)closeEditModal();});
