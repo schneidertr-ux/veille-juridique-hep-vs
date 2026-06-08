@@ -596,6 +596,7 @@
       <nav class="tab-nav" role="tablist" aria-label="Navigation principale">
         <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="tab-juri"  id="btn-tab-juri"  onclick="switchTab('juri')">📋 Jurisprudence</button>
         <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-veille" id="btn-tab-veille" onclick="switchTab('veille')">🔍 Veille live</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-sources" id="btn-tab-sources" onclick="switchTab('sources')">🔬 Sources nationales</button>
         <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-parl"  id="btn-tab-parl"  onclick="switchTab('parl')">📜 Parlement</button>
       </nav>
     </div>
@@ -631,6 +632,19 @@
               <option value="tc">TC</option>
               <option value="principe">Principe</option>
               <option value="imported">Importé</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label for="filter-categorie">Catégorie</label>
+            <select id="filter-categorie" onchange="applyFilters()" aria-label="Filtrer par catégorie">
+              <option value="">Toutes</option>
+              <option value="jurisprudence">Jurisprudence</option>
+              <option value="directive">Directive / Norme</option>
+              <option value="financement">Financement</option>
+              <option value="appel-projet">Appel à projets</option>
+              <option value="publication">Publication</option>
+              <option value="rapport">Rapport</option>
+              <option value="info">Information</option>
             </select>
           </div>
           <div class="ff">
@@ -670,6 +684,51 @@
           <li style="padding:.2rem 0 .2rem 1rem;position:relative;font-size:.84rem;color:var(--text-sec)"><span style="position:absolute;left:0;color:var(--red);font-weight:700">→</span><strong>Protection des titres</strong> — Art. 29 LEHE</li>
         </ul>
       </div>
+    </div>
+
+    <!-- ══ TAB SOURCES NATIONALES ══ -->
+    <div id="tab-sources" class="tab-pane" role="tabpanel" aria-labelledby="btn-tab-sources">
+
+      <!-- FNS / SNSF -->
+      <div class="veille-panel">
+        <div class="section-head" style="margin-top:0;margin-bottom:.75rem">
+          <h2 class="section-title">🔬 FNS / SNSF — data.snf.ch</h2>
+        </div>
+        <div class="search-row">
+          <div class="vf grow"><label for="snf-keyword">Mot-clé</label><input type="text" id="snf-keyword" value="HEP formation enseignants" /></div>
+          <div class="vf"><label for="snf-type">Type</label>
+            <select id="snf-type" style="width:200px">
+              <option value="">Tous les projets</option>
+              <option value="active">Projets actifs</option>
+              <option value="completed">Projets terminés</option>
+            </select>
+          </div>
+          <div class="vf"><label for="snf-discipline">Discipline</label>
+            <select id="snf-discipline" style="width:200px">
+              <option value="">Toutes</option>
+              <option value="education">Sciences de l'éducation</option>
+              <option value="pedagogy">Pédagogie</option>
+            </select>
+          </div>
+          <button id="snf-search-btn" style="padding:.5rem 1.2rem;background:var(--red);border:none;border-radius:var(--radius);color:#fff;font-size:.88rem;font-family:inherit;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s" onclick="veilleSnsfSearch()">🔍 Rechercher</button>
+        </div>
+      </div>
+      <div id="snf-status" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem;min-height:1em" aria-live="polite"></div>
+      <div id="snf-results"></div>
+
+      <!-- swissuniversities -->
+      <div class="veille-panel" style="margin-top:1.25rem">
+        <div class="section-head" style="margin-top:0;margin-bottom:.75rem">
+          <h2 class="section-title">🏛️ swissuniversities.ch</h2>
+        </div>
+        <div class="search-row">
+          <div class="vf grow"><label for="swuni-keyword">Mot-clé</label><input type="text" id="swuni-keyword" value="HEP-VS formation enseignants" /></div>
+          <button id="swuni-search-btn" style="padding:.5rem 1.2rem;background:var(--red);border:none;border-radius:var(--radius);color:#fff;font-size:.88rem;font-family:inherit;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s" onclick="veilleSwissUniSearch()">🔍 Rechercher</button>
+        </div>
+      </div>
+      <div id="swuni-status" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem;min-height:1em" aria-live="polite"></div>
+      <div id="swuni-results"></div>
+
     </div>
 
     <!-- ══ TAB 2 : VEILLE ══ -->
@@ -721,6 +780,14 @@
               <option value="ParlProcess">Objets parlementaires (postulats, motions…)</option>
               <option value="Document">Documents (réponses CE, rapports…)</option>
               <option value="ParlTransaction">Points à l'ordre du jour</option>
+            </select>
+          </div>
+          <div class="vf"><label for="vp-commission">Commission</label>
+            <select id="vp-commission" style="width:200px">
+              <option value="">Toutes</option>
+              <option value="formation">Commission formation</option>
+              <option value="finances">Commission finances</option>
+              <option value="sante">Commission santé-social</option>
             </select>
           </div>
           <button id="vparl-search-btn" onclick="veilleParlSearch()" aria-label="Lancer la recherche">🔍 Rechercher</button>
@@ -829,7 +896,7 @@
 // ════════════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════════════
-let appData = { meta:{lastUpdated:'',updateIntervalDays:30,changelog:[]}, jurisprudence:[], parlementaire:[] };
+let appData = { meta:{lastUpdated:'',updateIntervalDays:30,changelog:[]}, jurisprudence:[], parlementaire:[], sources_nationales:[] };
 let ghConfig = { owner:'', repo:'', branch:'main', path:'data.json', token:'' };
 let pendingChanges = false;
 let _editContext = { type:null, id:null };
@@ -839,7 +906,7 @@ let _vExpanded = {};
 const VPARL_PROXY_DEFAULT = 'https://api.codetabs.com/v1/proxy/?quest=';
 const VPARL_API_BASE = 'https://parlement.vs.ch/api/fe/v1';
 const VPARL_PUBLIC_BASE = 'https://parlement.vs.ch/fr';
-let _activeFilters = { text:'', type:'', hep:'', tags:[] };
+let _activeFilters = { text:'', type:'', hep:'', tags:[], categorie:'' };
 let _reorderMode = {};
 let _allExp = true;
 
@@ -1213,13 +1280,15 @@ function addTagFilter(tag) {
 }
 
 function applyFilters() {
-  _activeFilters.text = (document.getElementById('search-input').value||'').toLowerCase().trim();
-  _activeFilters.type = document.getElementById('filter-type').value;
-  _activeFilters.hep  = document.getElementById('filter-hep').value;
+  _activeFilters.text      = (document.getElementById('search-input').value||'').toLowerCase().trim();
+  _activeFilters.type      = document.getElementById('filter-type').value;
+  _activeFilters.hep       = document.getElementById('filter-hep').value;
+  _activeFilters.categorie = document.getElementById('filter-categorie').value;
   const arr = appData.jurisprudence || [];
   let filtered = arr.filter(a => {
     if (_activeFilters.type && a.type !== _activeFilters.type) return false;
     if (_activeFilters.hep  && a.hep  !== _activeFilters.hep)  return false;
+    if (_activeFilters.categorie && a.categorie !== _activeFilters.categorie) return false;
     if (_activeFilters.tags.length && !_activeFilters.tags.some(t=>(a.tags||[]).includes(t))) return false;
     if (_activeFilters.text) {
       const haystack = [a.ref,a.title,a.content,a.hep,a.court,...(a.keyPoints||[]),(a.tags||[]).join(' ')].join(' ').toLowerCase();
@@ -1228,15 +1297,16 @@ function applyFilters() {
     return true;
   });
   renderJurisprudence(filtered);
-  const hasFilter = _activeFilters.text || _activeFilters.type || _activeFilters.hep || _activeFilters.tags.length;
+  const hasFilter = _activeFilters.text || _activeFilters.type || _activeFilters.hep || _activeFilters.categorie || _activeFilters.tags.length;
   document.getElementById('filter-summary').textContent = hasFilter ? `${filtered.length} résultat${filtered.length!==1?'s':''}` : '';
 }
 
 function clearFilters() {
-  _activeFilters = { text:'', type:'', hep:'', tags:[] };
+  _activeFilters = { text:'', type:'', hep:'', tags:[], categorie:'' };
   document.getElementById('search-input').value = '';
   document.getElementById('filter-type').value = '';
   document.getElementById('filter-hep').value = '';
+  document.getElementById('filter-categorie').value = '';
   buildTagPills();
   renderJurisprudence();
   document.getElementById('filter-summary').textContent = '';
@@ -1716,7 +1786,12 @@ let _vparlLastQuery = { keyword: '', objectType: '' };
 
 async function veilleParlSearch(page) {
   const btn = document.getElementById('vparl-search-btn');
-  const keyword = document.getElementById('vp-keyword').value.trim() || 'HEP';
+  let keyword = document.getElementById('vp-keyword').value.trim() || 'HEP';
+  const commission = document.getElementById('vp-commission').value;
+  if (commission) {
+    const commissionLabels = { formation: 'commission formation', finances: 'commission finances', sante: 'commission santé' };
+    keyword = keyword + ' ' + (commissionLabels[commission] || commission);
+  }
   const objectType = document.getElementById('vp-type').value;
   const statusEl = document.getElementById('vparl-status');
   const listEl   = document.getElementById('vparl-results');
@@ -2113,6 +2188,192 @@ function downloadGHAction() {
   a.href = url; a.download = 'veille-alerte.yml'; a.click();
   URL.revokeObjectURL(url);
   toast('\u2b07\ufe0f veille-alerte.yml t\u00e9l\u00e9charg\u00e9 \u2014 \u00e0 placer dans .github/workflows/', 'success');
+}
+
+// ════════════════════════════════════════════════════════
+// SOURCES NATIONALES — FNS / SNSF
+// ════════════════════════════════════════════════════════
+async function veilleSnsfSearch() {
+  const btn = document.getElementById('snf-search-btn');
+  const keyword = document.getElementById('snf-keyword').value.trim() || 'HEP formation enseignants';
+  const statusEl = document.getElementById('snf-status');
+  const resultsEl = document.getElementById('snf-results');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Recherche…';
+  statusEl.textContent = '';
+  resultsEl.innerHTML = '';
+
+  const body = JSON.stringify({ q: keyword, limit: 20, from: 0 });
+  const snfUrl = 'https://data.snf.ch/api/grants/search';
+
+  try {
+    const res = await fetch(snfUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const hits = (data && (data.grants || data.data || data.results || data)) || [];
+    const arr = Array.isArray(hits) ? hits : [];
+    statusEl.textContent = arr.length + ' résultat(s) FNS';
+    if (!arr.length) { resultsEl.innerHTML = '<div class="empty-state">Aucun projet trouvé.</div>'; return; }
+    resultsEl.innerHTML = arr.map((g, i) => {
+      const title = esc(g.Title || g.title || g.ProjectTitle || '(sans titre)');
+      const resp = esc(g.ResponsibleApplicant || g.responsible_applicant || g.LeadApplicant || '—');
+      const inst = esc(g.Institution || g.institution || '—');
+      const amount = g.ApprovedAmount || g.approved_amount || g.Amount || '';
+      const startDate = esc(g.StartDate || g.start_date || '');
+      const endDate = esc(g.EndDate || g.end_date || '');
+      const appNum = g.ApplicationNumber || g.application_number || g.Id || g.id || '';
+      const discipline = esc(g.Discipline || g.discipline || g.ResearchInstitution || '');
+      const link = appNum ? 'https://data.snf.ch/grants/' + appNum : 'https://data.snf.ch';
+      return `<div class="vcard" style="border-left-color:var(--navy)">
+        <div class="vcard-header">
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">
+            <span class="vcard-court" style="background:var(--navy);color:#fff">FNS</span>
+            ${discipline ? `<span class="vcard-ref">${discipline}</span>` : ''}
+          </div>
+          <span class="vcard-date">${startDate}${endDate ? ' → ' + endDate : ''}</span>
+        </div>
+        <div class="vcard-title">${title}</div>
+        <div style="font-size:.78rem;color:var(--text-sec);margin-bottom:.35rem">
+          👤 ${resp} · 🏛️ ${inst}
+          ${amount ? ` · 💰 CHF ${Number(amount).toLocaleString('fr-CH')}` : ''}
+        </div>
+        <div class="vcard-actions">
+          <a href="${esc(link)}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
+          <button class="btn-add-veille" onclick="addSnfToCompilation(${i})" data-snf-idx="${i}">➕ Ajouter à la compilation</button>
+        </div>
+      </div>`;
+    }).join('');
+    // Store results for later use
+    window._snfResults = arr;
+  } catch (e) {
+    // Try via proxy fallback
+    const proxy = getVParlProxy();
+    if (proxy) {
+      try {
+        const proxyUrl = proxy + encodeURIComponent(snfUrl);
+        const res2 = await fetch(proxyUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+        if (!res2.ok) throw new Error('HTTP ' + res2.status);
+        const data2 = await res2.json();
+        const arr2 = Array.isArray(data2) ? data2 : (data2.grants || data2.data || data2.results || []);
+        statusEl.textContent = arr2.length + ' résultat(s) FNS (via proxy)';
+        if (!arr2.length) { resultsEl.innerHTML = '<div class="empty-state">Aucun projet trouvé.</div>'; return; }
+        resultsEl.innerHTML = '<div class="alert alert-info" style="margin-bottom:.75rem">Résultats obtenus via proxy CORS.</div>' + arr2.map((g, i) => {
+          const title = esc(g.Title || g.title || g.ProjectTitle || '(sans titre)');
+          const appNum = g.ApplicationNumber || g.application_number || g.Id || g.id || '';
+          const link = appNum ? 'https://data.snf.ch/grants/' + appNum : 'https://data.snf.ch';
+          return `<div class="vcard" style="border-left-color:var(--navy)">
+            <div class="vcard-title">${title}</div>
+            <div class="vcard-actions">
+              <a href="${esc(link)}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
+            </div>
+          </div>`;
+        }).join('');
+        window._snfResults = arr2;
+        return;
+      } catch (_) {}
+    }
+    statusEl.innerHTML = `<span style="color:var(--warn)">⚠️ L'API FNS nécessite un proxy CORS. Configurez-en un dans Parlement &gt; Configuration proxy.</span>`;
+    resultsEl.innerHTML = `<div class="alert alert-warn">Accès direct bloqué par CORS. <a href="https://data.snf.ch/grants" target="_blank" rel="noreferrer">Consulter data.snf.ch directement</a>.</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Rechercher';
+  }
+}
+
+function addSnfToCompilation(idx) {
+  const g = (window._snfResults || [])[idx]; if (!g) return;
+  const appNum = g.ApplicationNumber || g.application_number || g.Id || g.id || Date.now();
+  const id = 'fns-' + appNum;
+  if (!appData.sources_nationales) appData.sources_nationales = [];
+  if (appData.sources_nationales.find(x => x.id === id)) { toast('Déjà dans la compilation.', 'error'); return; }
+  appData.sources_nationales.push({
+    id,
+    source: 'fns',
+    categorie: 'financement',
+    titre: g.Title || g.title || g.ProjectTitle || '',
+    date: g.StartDate || g.start_date || '',
+    description: 'Responsable : ' + (g.ResponsibleApplicant || g.responsible_applicant || '—') + ' · Institution : ' + (g.Institution || g.institution || '—'),
+    url: appNum ? 'https://data.snf.ch/grants/' + appNum : 'https://data.snf.ch',
+    impacts: []
+  });
+  const btn = document.querySelector(`[data-snf-idx="${idx}"]`);
+  if (btn) { btn.textContent = '✓ Ajouté'; btn.classList.add('added'); btn.disabled = true; }
+  markPending();
+  toast('✅ Projet FNS ajouté à sources_nationales.', 'success');
+}
+
+// ════════════════════════════════════════════════════════
+// SOURCES NATIONALES — swissuniversities.ch
+// ════════════════════════════════════════════════════════
+async function veilleSwissUniSearch() {
+  const btn = document.getElementById('swuni-search-btn');
+  const keyword = document.getElementById('swuni-keyword').value.trim() || 'HEP-VS formation enseignants';
+  const statusEl = document.getElementById('swuni-status');
+  const resultsEl = document.getElementById('swuni-results');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Recherche…';
+  statusEl.textContent = '';
+  resultsEl.innerHTML = '';
+
+  const proxy = getVParlProxy();
+  const targetUrl = 'https://www.swissuniversities.ch/fr/recherche?tx_solr[q]=' + encodeURIComponent(keyword);
+
+  try {
+    const url = proxy ? (proxy + encodeURIComponent(targetUrl)) : targetUrl;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const html = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Try various selectors for search results
+    let items = [];
+    const selectors = ['.search-result', '.tx-solr-search-results .result-item', '.search-results .result', 'article.result', '.solr-result'];
+    for (const sel of selectors) {
+      const els = doc.querySelectorAll(sel);
+      if (els.length) { items = Array.from(els); break; }
+    }
+
+    if (!items.length) {
+      // Fallback: try to find any article or li with links
+      const links = doc.querySelectorAll('main a[href]');
+      if (links.length) {
+        statusEl.textContent = 'Parsing partiel — ' + links.length + ' lien(s) trouvé(s)';
+        resultsEl.innerHTML = `<div class="alert alert-info">Parsing automatique limité. <a href="${esc(targetUrl)}" target="_blank" rel="noreferrer">Voir les résultats sur swissuniversities.ch</a>.</div>`;
+      } else {
+        throw new Error('Aucun résultat parseable');
+      }
+      return;
+    }
+
+    statusEl.textContent = items.length + ' résultat(s) swissuniversities';
+    resultsEl.innerHTML = items.map(el => {
+      const titleEl = el.querySelector('h2,h3,h4,.title,a');
+      const descEl  = el.querySelector('p,.description,.snippet,.abstract');
+      const linkEl  = el.querySelector('a[href]');
+      const title = titleEl ? (titleEl.textContent || '').trim() : '(sans titre)';
+      const desc  = descEl  ? (descEl.textContent || '').trim().slice(0, 300) : '';
+      const href  = linkEl  ? linkEl.getAttribute('href') : '';
+      const absUrl = href ? (href.startsWith('http') ? href : 'https://www.swissuniversities.ch' + href) : targetUrl;
+      return `<div class="vcard" style="border-left-color:#1D4ED8">
+        <div class="vcard-title">${esc(title)}</div>
+        ${desc ? `<div style="font-size:.78rem;color:var(--text-sec);margin-bottom:.35rem">${esc(desc)}</div>` : ''}
+        <div class="vcard-actions">
+          <a href="${esc(absUrl)}" target="_blank" rel="noreferrer" class="vcard-doc-link">🔗 swissuniversities.ch</a>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:var(--text-muted)">Résultats disponibles sur swissuniversities.ch</span>`;
+    resultsEl.innerHTML = `<div class="alert alert-info">⚠️ ${esc(e.message)} — <a href="${esc(targetUrl)}" target="_blank" rel="noreferrer">Consulter swissuniversities.ch directement</a>.</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Rechercher';
+  }
 }
 
 // ════════════════════════════════════════════════════════

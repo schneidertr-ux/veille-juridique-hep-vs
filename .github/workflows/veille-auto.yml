@@ -1,0 +1,157 @@
+name: Veille HEP-VS — Mise à jour automatique
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'  # Tous les lundis à 7h UTC
+  workflow_dispatch:
+
+jobs:
+  update-veille:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Mise à jour automatique data.json
+        run: |
+          node - <<'EOF'
+          const fs = require('fs');
+          const https = require('https');
+
+          function httpsPost(url, body) {
+            return new Promise((resolve, reject) => {
+              const u = new URL(url);
+              const opts = {
+                hostname: u.hostname,
+                path: u.pathname + u.search,
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+              };
+              const req = https.request(opts, res => {
+                let data = '';
+                res.on('data', c => data += c);
+                res.on('end', () => {
+                  try { resolve(JSON.parse(data)); } catch(e) { reject(new Error('JSON parse: ' + e.message)); }
+                });
+              });
+              req.on('error', reject);
+              req.write(body);
+              req.end();
+            });
+          }
+
+          function httpsGet(url) {
+            return new Promise((resolve, reject) => {
+              const u = new URL(url);
+              const opts = { hostname: u.hostname, path: u.pathname + u.search, method: 'GET' };
+              https.get(opts, res => {
+                let data = '';
+                res.on('data', c => data += c);
+                res.on('end', () => {
+                  try { resolve(JSON.parse(data)); } catch(e) { reject(new Error('JSON parse: ' + e.message)); }
+                });
+              }).on('error', reject);
+            });
+          }
+
+          async function main() {
+            const dataPath = 'data.json';
+            const appData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+            if (!appData.sources_nationales) appData.sources_nationales = [];
+            if (!appData.parlementaire) appData.parlementaire = [];
+            let changed = false;
+
+            // --- FNS ---
+            try {
+              const fnsData = await httpsPost(
+                'https://data.snf.ch/api/grants/search',
+                JSON.stringify({ q: 'HEP formation enseignants', limit: 10, from: 0 })
+              );
+              const grants = Array.isArray(fnsData) ? fnsData : (fnsData.grants || fnsData.data || fnsData.results || []);
+              for (const g of grants) {
+                const appNum = g.ApplicationNumber || g.application_number || g.Id || g.id;
+                if (!appNum) continue;
+                const id = 'fns-' + appNum;
+                if (!appData.sources_nationales.find(x => x.id === id)) {
+                  appData.sources_nationales.push({
+                    id,
+                    source: 'fns',
+                    categorie: 'financement',
+                    titre: g.Title || g.title || g.ProjectTitle || '',
+                    date: g.StartDate || g.start_date || '',
+                    description: 'Responsable : ' + (g.ResponsibleApplicant || g.responsible_applicant || '—') +
+                                 ' · Institution : ' + (g.Institution || g.institution || '—'),
+                    url: 'https://data.snf.ch/grants/' + appNum,
+                    impacts: []
+                  });
+                  changed = true;
+                  console.log('FNS ajouté :', id);
+                }
+              }
+            } catch (e) {
+              console.warn('FNS fetch error:', e.message);
+            }
+
+            // --- Parlement VS ---
+            try {
+              const parlData = await httpsGet(
+                'https://parlement.vs.ch/api/fe/v1/full_text_search?search_term=HEP&object_type=ParlProcess&locale=fr&limit=10'
+              );
+              const hits = (parlData && parlData.results) || [];
+              for (const r of hits) {
+                const num = r.number || r.parl_process_number;
+                if (!num) continue;
+                const id = 'parl-' + num.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                if (!appData.parlementaire.find(x => x.id === id || x.parlProcessNumber === num)) {
+                  appData.parlementaire.unshift({
+                    id,
+                    parlProcessId: r.id,
+                    parlProcessNumber: num,
+                    title: (r.label || r.title || '').replace(/<[^>]+>/g, ''),
+                    docType: 'postulat',
+                    status: 'encours',
+                    priority: 'info',
+                    section: 'indirect',
+                    date: num,
+                    authors: '',
+                    vote: null,
+                    description: '',
+                    impacts: [],
+                    financial: null,
+                    officialUrl: 'https://parlement.vs.ch/fr/parl_process/' + r.id,
+                    timeline: []
+                  });
+                  changed = true;
+                  console.log('Parlement ajouté :', id);
+                }
+              }
+            } catch (e) {
+              console.warn('Parlement fetch error:', e.message);
+            }
+
+            // --- Mettre à jour lastUpdated ---
+            if (!appData.meta) appData.meta = {};
+            appData.meta.lastUpdated = new Date().toISOString().slice(0, 10);
+            changed = true;
+
+            fs.writeFileSync(dataPath, JSON.stringify(appData, null, 2), 'utf8');
+            console.log('data.json mis à jour. Nouveaux éléments :', changed ? 'oui' : 'non');
+          }
+
+          main().catch(e => { console.error(e); process.exit(1); });
+          EOF
+
+      - name: Commit et push si changements
+        run: |
+          git config user.name "veille-bot"
+          git config user.email "veille-bot@users.noreply.github.com"
+          git add data.json
+          git diff --staged --quiet || git commit -m "chore: mise à jour automatique veille — $(date +%Y-%m-%d)"
+          git push
