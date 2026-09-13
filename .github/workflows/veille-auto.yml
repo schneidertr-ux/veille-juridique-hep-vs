@@ -69,32 +69,51 @@ jobs:
             const appData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
             if (!appData.sources_nationales) appData.sources_nationales = [];
             if (!appData.parlementaire) appData.parlementaire = [];
-            let changed = false;
+            const addedEntries = [];
 
             // --- FNS ---
             try {
               const fnsData = await httpsPost(
                 'https://data.snf.ch/api/grants/search',
-                JSON.stringify({ q: 'HEP formation enseignants', limit: 10, from: 0 })
+                JSON.stringify({ start: '0', rows: '200', fields: [], filters: {}, includeFacets: false })
               );
-              const grants = Array.isArray(fnsData) ? fnsData : (fnsData.grants || fnsData.data || fnsData.results || []);
+              const returnedGrants = Array.isArray(fnsData)
+                ? fnsData
+                : ((fnsData.hits && fnsData.hits.hits) || fnsData.grants || fnsData.data || fnsData.results || []);
+              const relevanceTerms = [
+                'hep-vs', 'hep valais', 'ph wallis', 'haute école pédagogique',
+                'haute ecole pedagogique', 'pädagogische hochschule',
+                'formation des enseignants', 'teacher education'
+              ];
+              const grants = returnedGrants.filter(g => {
+                const source = g._source || g;
+                const searchableText = [
+                  source.title, source.english_title, source.abstract, source.keywords,
+                  source.applicants_institute_name, source.ResearchInstitution,
+                  source.institution, source.Institution
+                ].flat().filter(Boolean).join(' ').toLowerCase();
+                return relevanceTerms.some(term => searchableText.includes(term));
+              });
+              console.log(`FNS : ${returnedGrants.length} résultats contrôlés, ${grants.length} pertinents`);
               for (const g of grants) {
-                const appNum = g.ApplicationNumber || g.application_number || g.Id || g.id;
+                const source = g._source || g;
+                const appNum = source.ApplicationNumber || source.application_number || source.Id || source.id || g._id;
                 if (!appNum) continue;
                 const id = 'fns-' + appNum;
                 if (!appData.sources_nationales.find(x => x.id === id)) {
-                  appData.sources_nationales.push({
+                  const entry = {
                     id,
                     source: 'fns',
                     categorie: 'financement',
-                    titre: g.Title || g.title || g.ProjectTitle || '',
-                    date: g.StartDate || g.start_date || '',
-                    description: 'Responsable : ' + (g.ResponsibleApplicant || g.responsible_applicant || '—') +
-                                 ' · Institution : ' + (g.Institution || g.institution || '—'),
+                    titre: source.Title || source.title || source.ProjectTitle || source.english_title || '',
+                    date: source.StartDate || source.start_date || source.effective_start_date || '',
+                    description: 'Responsable : ' + (source.ResponsibleApplicant || source.responsible_applicant || source.applicants_full_name || '—') +
+                                 ' · Institution : ' + (source.Institution || source.institution || source.applicants_institute_name || '—'),
                     url: 'https://data.snf.ch/grants/' + appNum,
                     impacts: []
-                  });
-                  changed = true;
+                  };
+                  appData.sources_nationales.push(entry);
+                  addedEntries.push(entry);
                   console.log('FNS ajouté :', id);
                 }
               }
@@ -113,7 +132,7 @@ jobs:
                 if (!num) continue;
                 const id = 'parl-' + num.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                 if (!appData.parlementaire.find(x => x.id === id || x.parlProcessNumber === num)) {
-                  appData.parlementaire.unshift({
+                  const entry = {
                     id,
                     parlProcessId: r.id,
                     parlProcessNumber: num,
@@ -130,8 +149,9 @@ jobs:
                     financial: null,
                     officialUrl: 'https://parlement.vs.ch/fr/parl_process/' + r.id,
                     timeline: []
-                  });
-                  changed = true;
+                  };
+                  appData.parlementaire.unshift(entry);
+                  addedEntries.push(entry);
                   console.log('Parlement ajouté :', id);
                 }
               }
@@ -141,14 +161,10 @@ jobs:
 
             // --- Vérifier alertes par mot-clé ---
             const alertKeywords = (appData.meta && appData.meta.alertKeywords) || [];
-            const newEntries = [
-              ...(appData.sources_nationales||[]).slice(-20),
-              ...(appData.parlementaire||[]).slice(0,20)
-            ];
             const triggeredAlerts = [];
             for (const kw of alertKeywords) {
               const kwLower = kw.toLowerCase();
-              for (const entry of newEntries) {
+              for (const entry of addedEntries) {
                 const text = [
                   entry.titre||entry.title||'',
                   entry.description||entry.content||'',
@@ -166,13 +182,13 @@ jobs:
               console.log('Alertes déclenchées:', triggeredAlerts.map(a=>a.kw).join(', '));
             }
 
-            // --- Mettre à jour lastUpdated ---
-            if (!appData.meta) appData.meta = {};
-            appData.meta.lastUpdated = new Date().toISOString().slice(0, 10);
-            changed = true;
-
-            fs.writeFileSync(dataPath, JSON.stringify(appData, null, 2), 'utf8');
-            console.log('data.json mis à jour. Nouveaux éléments :', changed ? 'oui' : 'non');
+            fs.writeFileSync('new_entries.json', JSON.stringify(addedEntries, null, 2), 'utf8');
+            if (addedEntries.length) {
+              if (!appData.meta) appData.meta = {};
+              appData.meta.lastUpdated = new Date().toISOString().slice(0, 10);
+              fs.writeFileSync(dataPath, JSON.stringify(appData, null, 2), 'utf8');
+            }
+            console.log('Nouveaux éléments :', addedEntries.length);
           }
 
           main().catch(e => { console.error(e); process.exit(1); });
@@ -190,19 +206,12 @@ jobs:
             git commit -m "chore: mise à jour automatique veille — $(date +%Y-%m-%d)"
             git push
             echo "changed=true" >> $GITHUB_OUTPUT
-            # Compter les nouveaux éléments
-            COUNT=$(node -e "
-              const d=JSON.parse(require('fs').readFileSync('data.json'));
-              const today=new Date().toISOString().slice(0,10);
-              const newFns=(d.sources_nationales||[]).filter(x=>x.source==='fns'&&x.date>=today.slice(0,7)).length;
-              const newParl=(d.parlementaire||[]).filter(x=>x.id&&x.id.startsWith('parl-')).length;
-              console.log(newFns+newParl);
-            " 2>/dev/null || echo "0")
+            COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('new_entries.json','utf8')).length)" 2>/dev/null || echo "0")
             echo "count=$COUNT" >> $GITHUB_OUTPUT
           fi
 
       - name: Créer une issue de notification si nouvelles entrées
-        if: steps.commit.outputs.changed == 'true'
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.count != '0'
         uses: actions/github-script@v7
         with:
           script: |
@@ -274,7 +283,7 @@ jobs:
             ].join('\n'));
 
       - name: Préparer les adresses email destinataires
-        if: steps.commit.outputs.changed == 'true'
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.count != '0'
         id: mail-prep
         run: |
           EMAILS=$(node -e "
@@ -289,7 +298,7 @@ jobs:
           echo "to=$EMAILS" >> $GITHUB_OUTPUT
 
       - name: Envoyer l'email d'alerte
-        if: steps.commit.outputs.changed == 'true' && steps.mail-prep.outputs.to != ''
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.count != '0' && steps.mail-prep.outputs.to != ''
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
