@@ -285,20 +285,17 @@ jobs:
       - name: Préparer les adresses email destinataires
         if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.count != '0'
         id: mail-prep
+        env:
+          MAIL_TO: ${{ secrets.MAIL_TO }}
         run: |
-          EMAILS=$(node -e "
-            try {
-              const d = JSON.parse(require('fs').readFileSync('data.json','utf8'));
-              const arr = d.meta && d.meta.alertEmails && d.meta.alertEmails.length
-                ? d.meta.alertEmails
-                : (d.meta && d.meta.alertEmail ? [d.meta.alertEmail] : []);
-              console.log(arr.join(','));
-            } catch(e) { console.log(''); }
-          ")
-          echo "to=$EMAILS" >> $GITHUB_OUTPUT
+          if [ -n "$MAIL_TO" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Envoyer l'email d'alerte
-        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.count != '0' && steps.mail-prep.outputs.to != ''
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.count != '0' && steps.mail-prep.outputs.configured == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -307,7 +304,7 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: ${{ env.ALERT_IS_KW == 'true' && format('🚨 Alerte veille HEP-VS — Mot-clé détecté ({0})', env.ALERT_DATE) || format('🔔 Veille juridique HEP-VS — Mise à jour ({0})', env.ALERT_DATE) }}
-          to: ${{ steps.mail-prep.outputs.to }}
+          to: ${{ secrets.MAIL_TO }}
           from: "Veille HEP-VS <${{ secrets.MAIL_USERNAME }}>"
           html_body: |
             <!DOCTYPE html>
