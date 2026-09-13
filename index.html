@@ -731,7 +731,7 @@
       <div id="src-recherche" class="sub-tab-pane active">
         <div class="info-box" style="margin-bottom:1rem">
           <h3>🔬 Recherche — FNS / SNSF</h3>
-          <p>Interrogez la base de données des projets subventionnés par le Fonds national suisse (<code>data.snf.ch</code>). Filtrez par mot-clé, statut ou discipline, et importez les projets pertinents dans la compilation.</p>
+          <p>Recherchez dans les projets FNS pertinents pour les hautes écoles pédagogiques, synchronisés et contrôlés chaque semaine.</p>
         </div>
         <div class="veille-panel">
           <div class="search-row">
@@ -753,7 +753,7 @@
             <button id="snf-search-btn" class="action-btn primary" onclick="veilleSnsfSearch()">🔍 Rechercher</button>
           </div>
           <div style="font-size:.72rem;color:var(--text-muted);margin-top:.4rem">
-            Source : <a href="https://data.snf.ch" target="_blank" rel="noreferrer">data.snf.ch</a> — API REST publique · CORS bloqué depuis le navigateur → <strong>données pré-chargées ci-dessous via GitHub Actions (MAJ hebdomadaire)</strong>
+            Source : <a href="https://data.snf.ch" target="_blank" rel="noreferrer">data.snf.ch</a> · <strong>mise à jour hebdomadaire automatisée</strong>
           </div>
         </div>
         <div id="snf-status" style="font-size:.78rem;color:var(--text-muted);margin:.5rem 0;min-height:1em" aria-live="polite"></div>
@@ -863,13 +863,7 @@
           </div>
           <button id="vparl-search-btn" onclick="veilleParlSearch()" aria-label="Lancer la recherche">🔍 Rechercher</button>
         </div>
-        <div style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem">Source : <code>parlement.vs.ch</code> via proxy CORS · <button onclick="toggleVParlProxy()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.72rem;padding:0;text-decoration:underline">configurer</button></div>
-        <div id="vparl-proxy-cfg" style="display:none;margin-top:.5rem;padding:.5rem;background:var(--bg-alt);border-radius:6px;font-size:.78rem">
-          <label for="vp-proxy" style="display:block;margin-bottom:.2rem;font-weight:600">Proxy CORS (préfixe URL)</label>
-          <input type="text" id="vp-proxy" style="width:100%;padding:.35rem .55rem;border:1.5px solid var(--border-mid);border-radius:6px;font-family:monospace;font-size:.76rem" />
-          <div style="font-size:.7rem;color:var(--text-muted);margin-top:.25rem">Par défaut : <code>https://api.codetabs.com/v1/proxy/?quest=</code>. Vide = appel direct (ne marchera que si CORS ouvert).</div>
-          <button onclick="saveVParlProxy()" style="margin-top:.35rem;padding:.3rem .7rem;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:.75rem;cursor:pointer">Enregistrer</button>
-        </div>
+        <div style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem">Source : <code>parlement.vs.ch</code> · recherche dans la copie synchronisée chaque semaine</div>
       </div>
       <div id="vparl-status" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.4rem;min-height:1em;display:none" aria-live="polite"></div>
       <div id="vparl-results" style="margin-bottom:.8rem"></div>
@@ -1732,22 +1726,7 @@ function toggleVeilleParl() {
   const p = document.getElementById('vparl-panel');
   const show = p.style.display === 'none';
   p.style.display = show ? 'block' : 'none';
-  if (show) {
-    document.getElementById('vp-proxy').value = getVParlProxy();
-    document.getElementById('vp-keyword').focus();
-  }
-}
-
-function toggleVParlProxy() {
-  const el = document.getElementById('vparl-proxy-cfg');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-function saveVParlProxy() {
-  const v = document.getElementById('vp-proxy').value.trim();
-  localStorage.setItem('vparlProxy', v);
-  toast('✅ Proxy enregistré.', 'success');
-  document.getElementById('vparl-proxy-cfg').style.display = 'none';
+  if (show) document.getElementById('vp-keyword').focus();
 }
 
 async function vparlFetch(path) {
@@ -1797,48 +1776,40 @@ let _vparlLastQuery = { keyword: '', objectType: '' };
 
 async function veilleParlSearch(page) {
   const btn = document.getElementById('vparl-search-btn');
-  let keyword = document.getElementById('vp-keyword').value.trim() || 'HEP';
+  const keyword = document.getElementById('vp-keyword').value.trim();
   const commission = document.getElementById('vp-commission').value;
-  if (commission) {
-    const commissionLabels = { formation: 'commission formation', finances: 'commission finances', sante: 'commission santé' };
-    keyword = keyword + ' ' + (commissionLabels[commission] || commission);
-  }
   const objectType = document.getElementById('vp-type').value;
   const statusEl = document.getElementById('vparl-status');
   const listEl   = document.getElementById('vparl-results');
-  const isSameQuery = _vparlLastQuery.keyword === keyword && _vparlLastQuery.objectType === objectType;
-  const targetPage = (typeof page === 'number' && isSameQuery) ? page : 1;
-
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>Recherche…';
   statusEl.style.display = 'block';
-  statusEl.textContent = 'Interrogation de parlement.vs.ch… (page ' + targetPage + ')';
+  statusEl.textContent = 'Recherche dans les données synchronisées…';
   listEl.innerHTML = '';
   _veilleParlResults = [];
-
-  try {
-    const qs = '?search_term=' + encodeURIComponent(keyword) +
-               '&object_type=' + encodeURIComponent(objectType) +
-               '&locale=fr' +
-               (targetPage > 1 ? '&page=' + targetPage : '');
-    const data = await vparlFetch('/full_text_search' + qs);
-    const hits = (data && data.results) || [];
-    _veilleParlResults = hits;
-    _vparlPage = data.current_page || targetPage;
-    _vparlTotalPages = data.total_pages || 1;
-    _vparlLastQuery = { keyword, objectType };
-    const total = data.total_entries || hits.length;
-    const from = (_vparlPage - 1) * (data.per_page || 20) + 1;
-    const to = from + hits.length - 1;
-    statusEl.textContent = total + ' résultat(s) · page ' + _vparlPage + '/' + _vparlTotalPages + ' (affichés ' + from + '–' + to + ')';
-    if (!hits.length) { listEl.innerHTML = '<div class="empty-state">Aucun résultat.</div>'; return; }
-    listEl.innerHTML = hits.map((r, i) => renderVParlCard(r, i, objectType)).join('') + renderVParlPager();
-  } catch (e) {
-    statusEl.innerHTML = '<span style="color:var(--err)">Erreur : ' + esc(e.message) + '</span> · Essaie un autre proxy CORS dans les réglages.';
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '🔍 Rechercher';
-  }
+  const query = keyword.toLowerCase();
+  const commissionTerm = commission ? ({formation:'formation', finances:'finance', sante:'santé'}[commission] || commission) : '';
+  const hits = (appData.parlementaire || []).filter(d => {
+    const haystack = [d.title,d.description,d.authors,d.vote,d.docType,d.section,...(d.impacts||[]),...(d.timeline||[]).map(t=>t.status)].join(' ').toLowerCase();
+    const matchesQuery = !query || haystack.includes(query);
+    const matchesCommission = !commissionTerm || haystack.includes(commissionTerm);
+    const matchesType = !d.sourceType || d.sourceType === objectType;
+    return matchesQuery && matchesCommission && matchesType;
+  });
+  statusEl.textContent = hits.length + ' résultat(s) dans la dernière copie synchronisée';
+  listEl.innerHTML = hits.length
+    ? hits.map(d => `<div class="vcard" style="border-left-color:var(--red)">
+        <div class="vcard-header"><span class="vcard-court" style="background:var(--red);color:#fff">${esc((d.docType||'document').toUpperCase())}</span><span class="vcard-date">${esc(d.date||'')}</span></div>
+        <div class="vcard-title">${esc(d.title||'')}</div>
+        ${d.description ? `<div class="vcard-abstract open">${esc(d.description)}</div>` : ''}
+        <div class="vcard-actions">
+          <button class="btn-expand" onclick="goToResult('parl',decodeURIComponent('${encodedArg(d.id)}'))">Voir dans le suivi</button>
+          ${safeUrl(d.officialUrl) ? `<a href="${esc(safeUrl(d.officialUrl))}" target="_blank" rel="noopener noreferrer" class="vcard-doc-link">Document officiel</a>` : ''}
+        </div>
+      </div>`).join('')
+    : '<div class="empty-state">Aucun document synchronisé ne correspond à ces critères.</div>';
+  btn.disabled = false;
+  btn.innerHTML = '🔍 Rechercher';
 }
 
 function renderVParlPager() {
@@ -2430,99 +2401,41 @@ function renderSnfPreloaded() {
   sortSnfResults();
 }
 
-async function veilleSnsfSearch() {
+function veilleSnsfSearch() {
   const btn = document.getElementById('snf-search-btn');
-  const keyword = document.getElementById('snf-keyword').value.trim() || 'HEP formation enseignants';
+  const keyword = document.getElementById('snf-keyword').value.trim().toLowerCase();
+  const status = document.getElementById('snf-type').value;
+  const discipline = document.getElementById('snf-discipline').value;
   const statusEl = document.getElementById('snf-status');
   const resultsEl = document.getElementById('snf-results');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Recherche…';
-  statusEl.textContent = '';
-  resultsEl.innerHTML = '';
-
-  const body = JSON.stringify({ q: keyword, limit: 20, from: 0 });
-  const snfUrl = 'https://data.snf.ch/api/grants/search';
-
-  try {
-    const res = await fetch(snfUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    const hits = (data && (data.grants || data.data || data.results || data)) || [];
-    const arr = Array.isArray(hits) ? hits : [];
-    statusEl.textContent = arr.length + ' résultat(s) FNS';
-    if (!arr.length) { resultsEl.innerHTML = '<div class="empty-state">Aucun projet trouvé.</div>'; return; }
-    resultsEl.innerHTML = arr.map((g, i) => {
-      const title = esc(g.Title || g.title || g.ProjectTitle || '(sans titre)');
-      const resp = esc(g.ResponsibleApplicant || g.responsible_applicant || g.LeadApplicant || '—');
-      const inst = esc(g.Institution || g.institution || '—');
-      const amount = g.ApprovedAmount || g.approved_amount || g.Amount || '';
-      const startDate = esc(g.StartDate || g.start_date || '');
-      const endDate = esc(g.EndDate || g.end_date || '');
-      const appNum = g.ApplicationNumber || g.application_number || g.Id || g.id || '';
-      const discipline = esc(g.Discipline || g.discipline || g.ResearchInstitution || '');
-      const link = appNum ? 'https://data.snf.ch/grants/' + encodeURIComponent(appNum) : 'https://data.snf.ch';
+  const now = new Date();
+  const arr = (appData.sources_nationales || []).filter(g => {
+    if (g.source !== 'fns') return false;
+    const haystack = [g.titre,g.description,g.responsable,g.institution,g.discipline,...(g.impacts||[])].join(' ').toLowerCase();
+    const matchesKeyword = !keyword || keyword.split(/\s+/).some(term => term.length > 2 && haystack.includes(term));
+    const state = String(g.statut || g.status || '').toLowerCase();
+    const endDate = g.dateFin ? new Date(g.dateFin) : null;
+    const isActive = state === 'active' || state === 'ongoing' || (endDate && endDate >= now);
+    const matchesStatus = !status || (status === 'active' ? isActive : !isActive);
+    const disciplineText = String(g.discipline || '').toLowerCase();
+    const matchesDiscipline = !discipline || disciplineText.includes(discipline) || haystack.includes(discipline === 'education' ? 'éducation' : 'pédagog');
+    return matchesKeyword && matchesStatus && matchesDiscipline;
+  });
+  statusEl.textContent = arr.length + ' résultat(s) dans la dernière copie synchronisée';
+  resultsEl.innerHTML = arr.length ? arr.map(g => {
+      const link = safeUrl(g.url, 'https://data.snf.ch');
       return `<div class="vcard" style="border-left-color:var(--navy)">
         <div class="vcard-header">
-          <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center">
-            <span class="vcard-court" style="background:var(--navy);color:#fff">FNS</span>
-            ${discipline ? `<span class="vcard-ref">${discipline}</span>` : ''}
-          </div>
-          <span class="vcard-date">${startDate}${endDate ? ' → ' + endDate : ''}</span>
+          <span class="vcard-court" style="background:var(--navy);color:#fff">FNS</span>
+          <span class="vcard-date">${esc(g.date||'')}${g.dateFin ? ' → ' + esc(g.dateFin) : ''}</span>
         </div>
-        <div class="vcard-title">${title}</div>
-        <div style="font-size:.78rem;color:var(--text-sec);margin-bottom:.35rem">
-          👤 ${resp} · 🏛️ ${inst}
-          ${amount ? ` · 💰 CHF ${Number(amount).toLocaleString('fr-CH')}` : ''}
-        </div>
+        <div class="vcard-title">${esc(g.titre||'')}</div>
+        ${g.description ? `<div class="vcard-abstract open">${esc(g.description)}</div>` : ''}
         <div class="vcard-actions">
-          <a href="${esc(safeUrl(link, 'https://data.snf.ch'))}" target="_blank" rel="noopener noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
-          <button class="btn-add-veille" onclick="addSnfToCompilation(${i})" data-snf-idx="${i}">➕ Ajouter à la compilation</button>
+          <a href="${esc(link)}" target="_blank" rel="noopener noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
         </div>
       </div>`;
-    }).join('');
-    // Store results for later use
-    window._snfResults = arr;
-  } catch (e) {
-    // Try via proxy fallback
-    const proxy = getVParlProxy();
-    if (proxy) {
-      try {
-        const proxyUrl = proxy + encodeURIComponent(snfUrl);
-        const res2 = await fetch(proxyUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-        if (!res2.ok) throw new Error('HTTP ' + res2.status);
-        const data2 = await res2.json();
-        const arr2 = Array.isArray(data2) ? data2 : (data2.grants || data2.data || data2.results || []);
-        statusEl.textContent = arr2.length + ' résultat(s) FNS (via proxy)';
-        if (!arr2.length) { resultsEl.innerHTML = '<div class="empty-state">Aucun projet trouvé.</div>'; return; }
-        resultsEl.innerHTML = '<div class="alert alert-info" style="margin-bottom:.75rem">Résultats obtenus via proxy CORS.</div>' + arr2.map((g, i) => {
-          const title = esc(g.Title || g.title || g.ProjectTitle || '(sans titre)');
-          const appNum = g.ApplicationNumber || g.application_number || g.Id || g.id || '';
-          const link = appNum ? 'https://data.snf.ch/grants/' + encodeURIComponent(appNum) : 'https://data.snf.ch';
-          return `<div class="vcard" style="border-left-color:var(--navy)">
-            <div class="vcard-title">${title}</div>
-            <div class="vcard-actions">
-              <a href="${esc(safeUrl(link, 'https://data.snf.ch'))}" target="_blank" rel="noopener noreferrer" class="vcard-doc-link">🔗 data.snf.ch</a>
-            </div>
-          </div>`;
-        }).join('');
-        window._snfResults = arr2;
-        return;
-      } catch (_) {}
-    }
-    statusEl.innerHTML = `<span style="color:var(--text-muted)">ℹ️ Recherche live indisponible — l'API FNS bloque les appels navigateur (CORS). Les données sont chargées automatiquement chaque semaine via GitHub Actions.</span>`;
-    resultsEl.innerHTML = `<div class="alert alert-info">
-      La recherche live sur data.snf.ch n'est pas accessible depuis le navigateur (restriction CORS de l'API).
-      <br>👉 <a href="https://data.snf.ch/grants?q=${encodeURIComponent(keyword)}" target="_blank" rel="noreferrer">Rechercher <strong>${esc(keyword)}</strong> directement sur data.snf.ch</a>
-      <br><small>Les projets pertinents sont pré-chargés automatiquement chaque lundi dans la section ci-dessus.</small>
-    </div>`;
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '🔍 Rechercher';
-  }
+    }).join('') : '<div class="empty-state">Aucun projet FNS validé ne correspond à ces critères.</div>';
 }
 
 function addSnfToCompilation(idx) {
