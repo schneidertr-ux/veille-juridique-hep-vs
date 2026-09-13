@@ -1,4 +1,4 @@
-const CACHE = 'hep-vs-v1';
+const CACHE = 'hep-vs-v2';
 const ASSETS = ['./', './index.html', './data.json'];
 
 self.addEventListener('install', e => {
