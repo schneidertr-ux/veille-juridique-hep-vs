@@ -1,4 +1,4 @@
-const CACHE = 'hep-vs-v3';
+const CACHE = 'hep-vs-v4';
 const ASSETS = ['./', './index.html', './data.json'];
 
 self.addEventListener('install', e => {
@@ -14,8 +14,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
-  // data.json : network-first (toujours essayer le réseau pour avoir les données fraîches)
-  if (url.pathname.endsWith('data.json')) {
+  // La page et les données utilisent le réseau en priorité pour recevoir les mises à jour.
+  if (e.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname.endsWith('data.json')) {
     e.respondWith(
       fetch(e.request).then(res => {
         const clone = res.clone();
@@ -25,7 +25,7 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-  // Autres assets : cache-first
+  // Autres assets : cache-first pour le fonctionnement hors ligne.
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
