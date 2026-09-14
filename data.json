@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2026-09-07",
+    "lastUpdated": "2026-09-14",
     "updateIntervalDays": 30,
     "title": "Veille juridique HEP-VS",
     "alertKeywords": [
@@ -564,5 +564,76 @@
       ]
     }
   ],
-  "sources_nationales": []
+  "sources_nationales": [
+    {
+      "id": "fns-238302",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Schule der Vielfalt: Eine Analyse des Umgangs mit Vielfalt durch die Akteurinnen und Akteure der Schulpolitik und Schulverwaltung Berns im Zeitraum 1990 bis 2020",
+      "date": "2026-07-01",
+      "description": "Responsable : Elias Schmid · Institution : Pädagogische Hochschule NMS Bern",
+      "url": "https://data.snf.ch/grants/238302",
+      "impacts": []
+    },
+    {
+      "id": "fns-232968",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Islamverständnisse in der Diaspora: Eine Predigtanalyse am Beispiel albanisch-sprachiger Imame in der Schweiz",
+      "date": "2026-06-01",
+      "description": "Responsable : Arlinda Amiti · Institution : Institut für Sekundarstufe I & II Pädagogische Hochschule FHNW Fachhochschule Nordwestschweiz",
+      "url": "https://data.snf.ch/grants/232968",
+      "impacts": []
+    },
+    {
+      "id": "fns-242748",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Tagung: Wege der Hochschulraumentwicklung",
+      "date": "2026-05-01",
+      "description": "Responsable : Cornelia Dinsleder · Institution : Abteilung Forschung und Entwicklung Pädagogische Hochschule Luzern",
+      "url": "https://data.snf.ch/grants/242748",
+      "impacts": []
+    },
+    {
+      "id": "fns-242631",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "\"Bildung für eine lebenswerte Zukunft\" (Jahreskongress 2026 der Schweizerischen Gesellschaft für Bildungsforschung (SGBF) und der Schweizerischen Gesellschaft für Lehrerinnen- und Lehrerbildung (SGL))",
+      "date": "2026-05-01",
+      "description": "Responsable : Catherine Ferris · Institution : Prorektorat Forschung & Entwicklung Pädagogische Hochschule St. Gallen",
+      "url": "https://data.snf.ch/grants/242631",
+      "impacts": []
+    },
+    {
+      "id": "fns-241657",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Policy Enactment und seine Paradoxien: Zur Rekontextualisierung politischer Reformabsichten im Bildungssystem",
+      "date": "2026-05-01",
+      "description": "Responsable : Stephanie Appius · Institution : Pädagogische Hochschule",
+      "url": "https://data.snf.ch/grants/241657",
+      "impacts": []
+    },
+    {
+      "id": "fns-240460",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Journées d'étude Réseau scientifique inclusion scolaire et handicap",
+      "date": "2026-05-01",
+      "description": "Responsable : Héloise Durler · Institution : Haute École Pédagogique du Canton de Vaud",
+      "url": "https://data.snf.ch/grants/240460",
+      "impacts": []
+    },
+    {
+      "id": "fns-241906",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Geschichtslernen in Zeiten der Krise",
+      "date": "2026-04-01",
+      "description": "Responsable : Martin Nitsche,Julia Thyroff,Monika Waldis · Institution : Zentrum Pol. Bildung und Geschichtsdidaktik Pädagogische Hochschule Fachhochschule Nordwestschweiz,Zentrum Pol. Bildung und Geschichtsdidaktik Pädagogische Hochschule Fachhochschule Nordwestschweiz,Politische Bildung und Geschichtsdidaktik Zentrum für Demokratie Fachhochschule Nordwestschweiz",
+      "url": "https://data.snf.ch/grants/241906",
+      "impacts": []
+    }
+  ]
 }
