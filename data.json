@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-05",
     "updateIntervalDays": 30,
     "title": "Veille juridique HEP-VS",
     "alertKeywords": [
@@ -633,6 +633,16 @@
       "date": "2026-04-01",
       "description": "Responsable : Martin Nitsche,Julia Thyroff,Monika Waldis · Institution : Zentrum Pol. Bildung und Geschichtsdidaktik Pädagogische Hochschule Fachhochschule Nordwestschweiz,Zentrum Pol. Bildung und Geschichtsdidaktik Pädagogische Hochschule Fachhochschule Nordwestschweiz,Politische Bildung und Geschichtsdidaktik Zentrum für Demokratie Fachhochschule Nordwestschweiz",
       "url": "https://data.snf.ch/grants/241906",
+      "impacts": []
+    },
+    {
+      "id": "fns-244689",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "Wirtschaftliche Zusammenhänge verstehen im planspielbasierten Lernsetting. Didaktische Perspektiven einer nachhaltigkeitsorientierten Bildung",
+      "date": "2026-09-01",
+      "description": "Responsable : Susanne Lütolf · Institution : Pädagogische Hochschule Luzern",
+      "url": "https://data.snf.ch/grants/244689",
       "impacts": []
     }
   ]
