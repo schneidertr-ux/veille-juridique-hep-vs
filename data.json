@@ -1,6 +1,6 @@
 {
   "meta": {
-    "lastUpdated": "2026-10-05",
+    "lastUpdated": "2026-11-02",
     "updateIntervalDays": 30,
     "title": "Veille juridique HEP-VS",
     "alertKeywords": [
@@ -643,6 +643,16 @@
       "date": "2026-09-01",
       "description": "Responsable : Susanne Lütolf · Institution : Pädagogische Hochschule Luzern",
       "url": "https://data.snf.ch/grants/244689",
+      "impacts": []
+    },
+    {
+      "id": "fns-244449",
+      "source": "fns",
+      "categorie": "financement",
+      "titre": "STEAM éducation à l'ère de l'intelligence artificielle",
+      "date": "2026-08-01",
+      "description": "Responsable : — · Institution : —",
+      "url": "https://data.snf.ch/grants/244449",
       "impacts": []
     }
   ]
